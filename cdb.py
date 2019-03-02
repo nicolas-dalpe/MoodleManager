@@ -3,6 +3,7 @@ import MySQLdb as db
 import os
 import sys
 import tarfile
+import shutil
 
 
 class mm(object):
@@ -42,6 +43,8 @@ class mm(object):
                 self.fix(args)
             elif args[1] == "fixutf":
                 self.fixutf(args)
+            elif args[1] == "plugin":
+                self.plugin(args)
 
     def print_help(self):
         print("\n")
@@ -63,7 +66,11 @@ class mm(object):
         print(self.CWHITE + "\tSQL File : The SQL file to F&R in /backup/database\n" + self.CEND)
 
         print("./cdb.py fix")
-        print("\tFix Database collation, compress rows and clear MOODLE's cache\n")
+        print(self.CWHITE + "\tFix Database collation, compress rows and clear MOODLE's cache\n" + self.CEND)
+
+        print("./cdb.py plugin [force]")
+        print(self.CWHITE + "\tInstall missing plugin from Github and add them to .gitignore \n" + self.CEND)
+        print(self.CWHITE + "\tforce : Delete plugin if it exists \n" + self.CEND)
 
     def print_error(self, msg):
         """
@@ -233,16 +240,98 @@ class mm(object):
         dFile = os.path.join(self.dDir, db)
 
         if os.path.isfile(dFile):
-            print("\n\nStatus ==> varchar(1333)")
+            print("\nStatus ==> varchar(1333)")
             os.system("sed -i 's/varchar(1333) COLLATE utf8mb4_unicode_ci/varchar(190) COLLATE utf8mb4_unicode_ci/g' " + dFile)
-            print("\n\nStatus ==> varchar(255)")
+            print("\nStatus ==> varchar(255)")
             os.system("sed -i 's/varchar(255) COLLATE utf8mb4_unicode_ci/varchar(190) COLLATE utf8mb4_unicode_ci/g' " + dFile)
-            print("\n\nStatus ==> varchar(200)")
+            print("\nStatus ==> varchar(200)")
             os.system("sed -i 's/varchar(200) COLLATE utf8mb4_unicode_ci/varchar(190) COLLATE utf8mb4_unicode_ci/g' " + dFile)
-            print("\n\nStatus ==> ROW_FORMAT=COMPRESSED")
+            print("\nStatus ==> ROW_FORMAT=COMPRESSED")
             os.system("sed -i 's/ROW_FORMAT=COMPRESSED/ROW_FORMAT=DYNAMIC/g' " + dFile)
         else:
             self.print_error("SQL file not found")
+
+    def plugin(self, args):
+        """
+        Install all plugin from Github
+        """
+
+        # convert the args into a dictionary
+        param = self.cargs(args)
+
+        # Force switch
+        force = False
+        if 2 in param:
+            if param[2] == 'force':
+                force = True
+
+        # define the dictionary of plugin
+        plugins = {
+            'kpdesktop': {
+                'url': "git@github.com:ndalpe/kpdesktop.git",
+                'path': 'theme/kpdesktop',
+                'branch': 'master'
+            },
+            'iomadfollowup': {
+                'url': 'git@github.com:ndalpe/studentsfollowup.git',
+                'path': 'report/iomadfollowup',
+                'branch': 'master'
+            },
+            'iomadanalytics': {
+                'url': 'git@github.com:ndalpe/iomadanalytics.git',
+                'path': 'report/iomadanalytics',
+                'branch': 'master'
+            },
+            'multilang2': {
+                'url': 'git@github.com:iarenaza/moodle-filter_multilang2.git',
+                'path': 'filter/multilang2',
+                'branch': 'master'
+            },
+            'deferredallnothing': {
+                'url': 'git@github.com:dthies/moodle-qbehaviour_deferredallnothing.git',
+                'path': 'question/behaviour/deferredallnothing',
+                'branch': 'master'
+            },
+            'filtered_course_list': {
+                'url': 'git@github.com:CLAMP-IT/moodle-blocks_filtered_course_list.git',
+                'path': 'blocks/filtered_course_list',
+                'branch': 'master'
+            }
+        }
+
+        for pluginName, pluginInfo in plugins.items():
+            # Get the plugin abs path
+            pluginPath = os.path.join(self.wd, pluginInfo['path'])
+
+            # Test if the plugin is already installed
+            if not os.path.isdir(pluginPath):
+                self.install_plugin(pluginName, pluginInfo)
+            elif os.path.isdir(pluginPath) and force:
+                shutil.rmtree(pluginPath)
+                self.install_plugin(pluginName, pluginInfo)
+            else:
+                print("skip")
+
+    def install_plugin(self, pluginName, pluginInfo):
+        """
+        Install plugin
+        """
+        print("\n\nStatus ==> Installing " + pluginName)
+
+        os.system("git clone {} {}".format(pluginInfo['url'], pluginInfo['path']))
+
+        if pluginInfo['branch'] != 'master':
+            print("\nStatus ==> Tracking {}".format(pluginInfo['branch']))
+            os.chdir(os.path.join(self.wd, pluginInfo['path']))
+            os.system("git branch --track {} origin/{}".format(pluginInfo['branch'], pluginInfo['branch']))
+
+            print("\nStatus ==> Checking out {}".format(pluginName))
+            os.system("git checkout {}".format(pluginInfo['branch']))
+
+            os.chdir(self.wd)
+
+        print("\nStatus ==> Ignoring {}\n\n".format(pluginName))
+        os.system("echo {} >> .git/info/exclude".format(pluginInfo['path']))
 
 
 a = mm(sys.argv)
