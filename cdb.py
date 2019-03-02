@@ -56,26 +56,28 @@ class mm(object):
         print("\n")
 
         print("create database [import] [archive]")
-        print("\tCreate an utf8mb4 database and import a SQL dump if import is specified")
+        print("\tUsage: p3 cdb.py create [import] [archive]")
+        print("\tCreate an utf8mb4 database and import a SQL dump if specified")
+        print(self.CWHITE + "\tcreate   : Create an utf8mb4 database" + self.CEND)
         print(self.CWHITE + "\tdatabase : Database name" + self.CEND)
         print(self.CWHITE + "\timport   : Import SQL switch." + self.CEND)
         print(self.CWHITE + "\tarchive  : File to import (without .sql.tar.gz)" + self.CEND)
         print(self.CWHITE + "                   Default backup/database/database.sql.tar.gz\n" + self.CEND)
 
-        print("export database [archive]")
-        print("\tExport the content of a database into a SQL file and compress it")
+        print("./cdb.py export database [archive]")
+        print(self.CWHITE + "\texport   : Export the database in SQL format and tar it" + self.CEND)
         print(self.CWHITE + "\tdatabase : Database name" + self.CEND)
-        print(self.CWHITE + "\tarchive  : Archive file name. Default is database name.\n" + self.CEND)
+        print(self.CWHITE + "\tarchive  : Archive file. Default is database name.\n" + self.CEND)
 
-        print("fixutf [SQL file]")
-        print("\tFind and replace the varchar(x) column with a varchar(190)")
+        print("./cdb.py fixutf [SQL file]")
+        print(self.CWHITE + "\tF&R the varchar(x) column with a varchar(190)" + self.CEND)
         print(self.CWHITE + "\tSQL File : The SQL file to F&R in /backup/database\n" + self.CEND)
 
-        print("fix")
-        print("\tFix Database collation, compress rows and clear MOODLE's cache\n")
+        print("./cdb.py fix")
+        print(self.CWHITE + "\tFix Database collation, compress rows and clear MOODLE's cache\n" + self.CEND)
 
-        print("plugin [force]")
-        print("\tInstall missing plugin from Github and add them to .gitignore \n")
+        print("./cdb.py plugin [force]")
+        print(self.CWHITE + "\tInstall missing plugin from Github and add them to .gitignore \n" + self.CEND)
         print(self.CWHITE + "\tforce : Delete plugin if it exists \n" + self.CEND)
 
     def create(self, args):
