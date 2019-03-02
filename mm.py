@@ -84,7 +84,7 @@ class mm(object):
         dbName = args[2]
 
         # get a MySQL connection
-        cursor = self.getDbConn(dbName)
+        cursor = self.utils.getDbConn(dbName)
 
         self.utils.print_status("Setting innodb_default_row_format")
         cursor.execute("SET GLOBAL innodb_default_row_format = DYNAMIC;")
@@ -157,7 +157,7 @@ class mm(object):
         dFile = os.path.join(self.dDir, archive)
 
         # get a MySQL connection
-        cursor = self.getDbConn(dbName)
+        cursor = self.utils.getDbConn(dbName)
 
         # output moodle database as backup
         self.utils.print_status("Starting: MySQL Dump")
