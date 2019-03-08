@@ -21,6 +21,9 @@ class mm(object):
     # Default git repository directory
     rDir = "/home/ndalpe/w/Repositories"
 
+    # passed parameter to the script
+    param = ''
+
     # color code \x1b[38;2;R;G;Bm
     CRED = "\x1b[38;2;176;0;32m"
     CBLUE = "\x1b[38;2;36;123;160m"
@@ -33,6 +36,9 @@ class mm(object):
         # initialize the utilities class
         # contains various usefull method
         self.utils = utils()
+
+        # convert the args into a dictionary
+        self.param = self.utils.cargs(args)
 
         # if not arguments given, print help
         if len(args) == 1:
@@ -48,6 +54,8 @@ class mm(object):
                 self.fixutf(args)
             elif args[1] == "plugin":
                 self.plugin(args)
+            elif args[1] == "md":
+                self.datadir(args)
 
     def print_help(self):
         print("\n")
@@ -211,12 +219,9 @@ class mm(object):
         ./cdb.sh fixutf kpmy.sql would set $db to kpmy.sql
         """
 
-        # convert the args into a dictionary
-        param = self.utils.cargs(args)
-
         # use default file name if none is passed
-        if 2 in param:
-            db = param[2] + ".sql"
+        if 2 in self.param:
+            db = self.param[2] + ".sql"
         else:
             db = "export.sql"
 
@@ -224,7 +229,6 @@ class mm(object):
         dFile = os.path.join(self.dDir, db)
 
         if os.path.isfile(dFile):
-            print("\nStatus ==> varchar(1333)")
             self.utils.print_status("F+R varchar(1333)")
             os.system("sed -i 's/varchar(1333) COLLATE utf8mb4_unicode_ci/varchar(190) COLLATE utf8mb4_unicode_ci/g' " + dFile)
             self.utils.print_status("F+R varchar(255)")
@@ -241,13 +245,10 @@ class mm(object):
         Install all plugin from Github
         """
 
-        # convert the args into a dictionary
-        param = self.utils.cargs(args)
-
         # Force switch
         force = False
-        if 2 in param:
-            if param[2] == 'force':
+        if 2 in self.param:
+            if self.param[2] == 'force':
                 force = True
 
         # define the dictionary of plugin
@@ -296,6 +297,9 @@ class mm(object):
                 self.utils.install_plugin(pluginName, pluginInfo)
             else:
                 self.utils.print_status("Skipping " + pluginName)
+
+    def datadir(self):
+        pass
 
 
 class utils(mm):
