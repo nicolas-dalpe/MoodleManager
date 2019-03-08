@@ -21,15 +21,12 @@ class mm(object):
     # Default git repository directory
     rDir = "/home/ndalpe/w/Repositories"
 
-    CBLACK = "\33[30m"
-    CRED = "\33[31m"
-    CGREEN = "\33[32m"
-    CYELLOW = "\33[33m"
-    CBLUE = "\33[34m"
-    CVIOLET = "\33[35m"
-    CBEIGE = "\33[36m"
-    CWHITE = "\33[37m"
-    CEND = "\033[0m"
+    # color code \x1b[38;2;R;G;Bm
+    CRED = "\x1b[38;2;176;0;32m"
+    CBLUE = "\x1b[38;2;36;123;160m"
+    CLBLUE = "\x1b[38;2;208;244;234m"
+    CGREEN = "\x1b[38;2;58;125;68m"
+    CEND = "\x1b[0m"
 
     def __init__(self, args):
 
@@ -55,28 +52,28 @@ class mm(object):
     def print_help(self):
         print("\n")
 
-        print("create database [import] [archive]")
-        print("\tCreate an utf8mb4 database and import a SQL dump if import is specified")
-        print(self.CWHITE + "\tdatabase : Database name" + self.CEND)
-        print(self.CWHITE + "\timport   : Import SQL switch." + self.CEND)
-        print(self.CWHITE + "\tarchive  : File to import (without .sql.tar.gz)" + self.CEND)
-        print(self.CWHITE + "                   Default backup/database/database.sql.tar.gz\n" + self.CEND)
+        self.utils.print_msg("create database [import] [archive]", self.CBLUE)
+        self.utils.print_msg("\tCreate an utf8mb4 database and import a SQL dump if import is specified")
+        self.utils.print_msg("\tdatabase : Database name", self.CLBLUE)
+        self.utils.print_msg("\timport   : Import SQL switch.", self.CLBLUE)
+        self.utils.print_msg("\tarchive  : File to import (without .sql.tar.gz)", self.CLBLUE)
+        self.utils.print_msg("                   Default backup/database/database.sql.tar.gz\n", self.CLBLUE)
 
-        print("export database [archive]")
-        print("\tExport the content of a database into a SQL file and compress it")
-        print(self.CWHITE + "\tdatabase : Database name" + self.CEND)
-        print(self.CWHITE + "\tarchive  : Archive file name. Default is database name.\n" + self.CEND)
+        self.utils.print_msg("export database [archive]", self.CBLUE)
+        self.utils.print_msg("\tExport the content of a database into a SQL file and compress it")
+        self.utils.print_msg("\tdatabase : Database name", self.CLBLUE)
+        self.utils.print_msg("\tarchive  : Archive file name. Default is database name.\n", self.CLBLUE)
 
-        print("fixutf [SQL file]")
-        print("\tFind and replace the varchar(x) column with a varchar(190)")
-        print(self.CWHITE + "\tSQL File : The SQL file to F&R in /backup/database\n" + self.CEND)
+        self.utils.print_msg("fixutf [SQL file]", self.CBLUE)
+        self.utils.print_msg("\tFind and replace the varchar(x) column with a varchar(190)")
+        self.utils.print_msg("\tSQL File : The SQL file to F&R in /backup/database\n", self.CLBLUE)
 
-        print("fix")
-        print("\tFix Database collation, compress rows and clear MOODLE's cache\n")
+        self.utils.print_msg("fix", self.CBLUE)
+        self.utils.print_msg("\tFix Database collation, compress rows and clear MOODLE's cache\n")
 
-        print("plugin [force]")
-        print("\tInstall missing plugin from Github and add them to .gitignore \n")
-        print(self.CWHITE + "\tforce : Delete plugin if it exists \n" + self.CEND)
+        self.utils.print_msg("plugin [force]", self.CBLUE)
+        self.utils.print_msg("\tInstall missing plugin from Github and add them to .gitignore")
+        self.utils.print_msg("\tforce : Delete plugin if it exists \n", self.CLBLUE)
 
     def create(self, args):
         """ python3 cdb.py create dbname import archive"""
@@ -171,10 +168,10 @@ class mm(object):
         # Compress MySQL dump
         dump = tarfile.open(archive + ".tar.gz", mode='w:gz')
         try:
-            print("    Adding {}".format(archive))
+            self.utils.print_msg("    Adding {}".format(archive))
             dump.add(archive)
         finally:
-            print("    Closing {}".format(archive))
+            self.utils.print_msg("    Closing {}".format(archive))
             dump.close()
 
         # Delete the .sql dump file
@@ -316,6 +313,16 @@ class utils(mm):
         Print red error message
         """
         print("\n" + self.CGREEN + "Status ==> " + self.CEND + msg)
+
+    def print_msg(self, msg, color=False):
+        """
+        Print a colored message
+        """
+        if len(msg) > 0:
+            if not color:
+                print(msg)
+            else:
+                print(color + msg + self.CEND)
 
     def getDbConn(self, dbName=""):
         """
