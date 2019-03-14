@@ -136,7 +136,7 @@ class mm(object):
 
                 # import the extracted dump file into the database
                 self.utils.print_status("Importing {} into {}".format(dumpFile, dbName))
-                os.system("mysql -u{} -p{} {} < {}".format(self.dbUserName, self.dbPassword, dbName, os.path.join(self.dDir, dumpFile)))
+                os.system("mysql -u{} -p{} {} < {}".format(self.utils.dbUserName, self.utils.dbPassword, dbName, os.path.join(self.dDir, dumpFile)))
 
                 # remove the imported SQL dump file
                 if os.path.isfile(dumpFile):
@@ -166,7 +166,7 @@ class mm(object):
 
         # output moodle database as backup
         self.utils.print_status("Starting: MySQL Dump")
-        os.system("mysqldump --user=" + self.dbUserName + " --password=" + self.dbPassword + " " + dbName + " --opt --no-create-db > " + dFile)
+        os.system("mysqldump --user=" + self.utils.dbUserName + " --password=" + self.utils.dbPassword + " " + dbName + " --opt --no-create-db > " + dFile)
 
         self.utils.print_status("Starting: Compress {}".format(archive))
 
