@@ -266,7 +266,7 @@ class mm(object):
         else:
             self.utils.print_error("SQL file not found")
 
-    def purgeCache(self, args):
+    def purgeCache(self):
         """
         Purge Moodle's cache
         """
@@ -343,8 +343,22 @@ class mm(object):
             self.utils.print_msg("archive: archive name without the .tar.gz extension")
             exit()
 
+        # Make sure the archive file exists
+        if not os.path.isfile(os.path.join(self.dDir, self.param[2] + ".tar.gz")):
+            self.utils.print_error("*** [archive] must exists ***")
+            self.utils.print_msg("p3 mm.py archive")
+            self.utils.print_msg("archive: archive name without the .tar.gz extension")
+            exit()
+
+        # Make sure the archive is a tar file
+        if not tarfile.is_tarfile(os.path.join(self.dDir, self.param[2] + ".tar.gz")):
+            self.utils.print_error("*** [archive] must be a .tar.gz file format ***")
+            self.utils.print_msg("p3 mm.py archive")
+            self.utils.print_msg("archive: archive name without the .tar.gz extension")
+            exit()
+
         # folder param is mandatory
-        if 2 not in self.param:
+        if 3 not in self.param:
             self.utils.print_error("*** [folder] must be specified ***")
             self.utils.print_msg("p3 mm.py archive folder")
             self.utils.print_msg("folder: name of Moodle's data directory")
@@ -356,74 +370,69 @@ class mm(object):
         # Archive containing the Moodle data dir
         archive = os.path.join(self.dDir, archiveName)
 
-        # check if archive exists and if it is a tar file
-        if os.path.isfile(archive) and tarfile.is_tarfile(archive):
-
-            # New Moodle data directory to create
-            if 3 in self.param:
-                newDD = os.path.join(self.mDir, self.param[3])
-                if os.path.isdir(newDD):
-                    overwrite = input("Overwrite " + newDD + " ? (y/n)")
-                    if overwrite == 'y':
-                        # delete the existing dir
-                        self.utils.print_status("Deleting current " + newDD)
-                        # shutil.rmtree(newDD)
-                        os.system("sudo rm -R " + newDD)
-                    else:
-                        self.utils.print_error("Declined overwrite of " + newDD)
-                        exit()
-
-            # check the dir name in archive
-            tar = tarfile.open(archive)
-
-            # get the path of the first file in the archive
-            archivePath = Path(tar.getnames()[1])
-
-            # get the root Moodle data dir in archive
-            dirInArchive = archivePath.parts[0]
-
-            # close the archive for now
-            tar.close()
-
-            # test if the dir in archive already exists in mDir
-            tmpMDir = os.path.join(self.mDir, dirInArchive)
-
-            if os.path.isdir(tmpMDir):
-                overwrite = input("Overwrite " + tmpMDir + " ? (y/n)")
+        # New Moodle data directory to create
+        if 3 in self.param:
+            newDD = os.path.join(self.mDir, self.param[3])
+            if os.path.isdir(newDD):
+                overwrite = input("Overwrite " + newDD + " ? (y/n)")
                 if overwrite == 'y':
                     # delete the existing dir
-                    self.utils.print_status("Deleting current " + tmpMDir)
-                    os.system("sudo rm -R " + tmpMDir)
+                    self.utils.print_status("Deleting current " + newDD)
+                    # shutil.rmtree(newDD)
+                    os.system("sudo rm -R " + newDD)
                 else:
-                    self.utils.print_error("Declined overwrite of " + tmpMDir)
+                    self.utils.print_error("Declined overwrite of " + newDD)
                     exit()
 
-            # copy the archive in mDir
-            self.utils.print_status("Copy " + archive)
-            os.system("sudo cp -rp {} {}".format(archive, self.mDir))
+        # check the dir name in archive
+        tar = tarfile.open(archive)
 
-            # extract the archive
-            self.utils.print_status("Extracting " + archive + " in " + self.mDir)
-            os.system("sudo tar --extract --file={} --directory={}".format(archive, self.mDir))
+        # get the path of the first file in the archive
+        archivePath = Path(tar.getnames()[1])
 
-            # rename the extracted dir if [folder] param is different
-            if 3 in self.param:
-                if dirInArchive != self.param[3]:
-                    self.utils.print_status("Renaming {} to {}".format(dirInArchive, self.param[3]))
-                    os.rename(
-                        os.path.join(self.mDir, dirInArchive),
-                        os.path.join(self.mDir, self.param[3]),
-                    )
+        # get the root Moodle data dir in archive
+        dirInArchive = archivePath.parts[0]
 
-            # remove the archive from mDir
-            self.utils.print_status("Removing " + os.path.join(self.mDir, archiveName))
-            os.system("sudo rm " + os.path.join(self.mDir, archiveName))
+        # close the archive for now
+        tar.close()
 
-            self.utils.print_status("Completed")
+        # test if the dir in archive already exists in mDir
+        tmpMDir = os.path.join(self.mDir, dirInArchive)
 
-            os.system("ls -lsh " + self.mDir)
-        else:
-            self.utils.print_error(archive + "! exists or is not a tar file")
+        if os.path.isdir(tmpMDir):
+            overwrite = input("Overwrite " + tmpMDir + " ? (y/n)")
+            if overwrite == 'y':
+                # delete the existing dir
+                self.utils.print_status("Deleting current " + tmpMDir)
+                os.system("sudo rm -R " + tmpMDir)
+            else:
+                self.utils.print_error("Declined overwrite of " + tmpMDir)
+                exit()
+
+        # copy the archive in mDir
+        self.utils.print_status("Copy " + archive)
+        os.system("sudo cp -rp {} {}".format(archive, self.mDir))
+
+        # extract the archive
+        self.utils.print_status("Extracting " + archive + " in " + self.mDir)
+        os.system("sudo tar --extract --file={} --directory={}".format(archive, self.mDir))
+
+        # rename the extracted dir if [folder] param is different
+        if 3 in self.param:
+            if dirInArchive != self.param[3]:
+                self.utils.print_status("Renaming {} to {}".format(dirInArchive, self.param[3]))
+                os.rename(
+                    os.path.join(self.mDir, dirInArchive),
+                    os.path.join(self.mDir, self.param[3]),
+                )
+
+        # remove the archive from mDir
+        self.utils.print_status("Removing " + os.path.join(self.mDir, archiveName))
+        os.system("sudo rm " + os.path.join(self.mDir, archiveName))
+
+        self.utils.print_status("Completed")
+
+        os.system("ls -lsh " + self.mDir)
 
 
 class utils(mm):
