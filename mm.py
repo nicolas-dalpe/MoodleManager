@@ -55,7 +55,9 @@ class mm(object):
             elif args[1] == "plugin":
                 self.plugin(args)
             elif args[1] == "md":
-                self.datadir(args)
+                self.datadir()
+            elif args[1] == "pc":
+                self.purgeCache()
 
     def print_help(self):
         print("\n")
@@ -78,6 +80,9 @@ class mm(object):
 
         self.utils.print_msg("fix", self.CBLUE)
         self.utils.print_msg("\tFix Database collation, compress rows and clear MOODLE's cache\n")
+
+        self.utils.print_msg("pc", self.CBLUE)
+        self.utils.print_msg("\tPurge MOODLE's cache\n")
 
         self.utils.print_msg("plugin [force]", self.CBLUE)
         self.utils.print_msg("\tInstall missing plugin from Github and add them to .gitignore")
@@ -205,10 +210,8 @@ class mm(object):
             os.path.join(self.wd, "admin/cli/mysql_compressed_rows.php")
         ))
 
-        self.utils.print_status("Clearing Moodle's cache")
-        os.system("/usr/bin/php {}".format(
-            os.path.join(self.wd, "admin/cli/purge_caches.php")
-        ))
+        # purge Moodle's cache
+        self.purgeCache()
 
     def fixutf(self, args):
         """
@@ -239,6 +242,12 @@ class mm(object):
             os.system("sed -i 's/ROW_FORMAT=COMPRESSED/ROW_FORMAT=DYNAMIC/g' " + dFile)
         else:
             self.utils.print_error("SQL file not found")
+
+    def purgeCache(self, args):
+        """
+        Purge Moodle's cache
+        """
+        self.utils.purgeMoodleCache()
 
     def plugin(self, args):
         """
@@ -327,6 +336,15 @@ class utils(mm):
                 print(msg)
             else:
                 print(color + msg + self.CEND)
+
+    def purgeMoodleCache(self):
+        """
+        Shortcut to clear Moodle's cache
+        """
+        self.print_status("Clearing Moodle's cache")
+        os.system("/usr/bin/php {}".format(
+            os.path.join(self.wd, "admin/cli/purge_caches.php")
+        ))
 
     def getDbConn(self, dbName=""):
         """
