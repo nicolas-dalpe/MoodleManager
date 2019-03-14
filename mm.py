@@ -112,9 +112,19 @@ class mm(object):
         self.utils.print_msg("\tforce : Delete plugin if it exists \n", self.CLBLUE)
 
     def create(self, args):
-        """ python3 cdb.py create dbname import archive"""
+        """
+        Create an UTF8 database as Moodle expects it
+        p3 mm.py create dbname import archive
+        """
 
-        dbName = args[2]
+        # database name param is mandatory
+        if 2 not in self.param:
+            self.utils.print_error("*** [dtabase] must be specified ***")
+            self.utils.print_msg("p3 mm.py create dbName")
+            self.utils.print_msg("dbName: Name of the database to create")
+            exit()
+
+        dbName = self.param[2]
 
         # get a MySQL connection
         cursor = self.utils.getDbConn(dbName)
@@ -148,14 +158,19 @@ class mm(object):
         cursor.execute("CREATE DATABASE " + dbName + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
         self.utils.print_status("Database {} created.".format(dbName))
 
-        if args[3] == "import":
-            self.utils.print_status("Starting import of {}".format(args[2]))
+        # database name param is mandatory
+        if 3 not in self.param:
+            self.utils.print_msg("Create database " + dbName + " completed.")
+            exit()
 
-            # tar version of the MySQL dump to import
-            archive = args[4] + '.sql.tar.gz'
+        if 4 in self.param:
+
+            # tar of the MySQL dump to import
+            archive = self.param[4] + '.sql.tar.gz'
 
             # if the file exists, extract it from the archive
             if os.path.isfile(os.path.join(self.dDir, archive)):
+                self.utils.print_status("Starting import of {}".format(self.param[2]))
                 self.utils.print_status("Deflate {}".format(archive))
                 os.chdir(self.dDir)
                 tf = tarfile.open(archive)
@@ -170,7 +185,17 @@ class mm(object):
                 if os.path.isfile(dumpFile):
                     os.remove(dumpFile)
             else:
-                self.utils.print_error("Archive not found. " + archive)
+                self.utils.print_error("*** archive must exists ***")
+                self.utils.print_msg("p3 mm.py create dbName import archive")
+                self.utils.print_msg("archive: Name of the SQL dump file in " + self.dDir)
+                self.utils.print_msg("archive must be specified without the .sql.tar.gz extension")
+                exit()
+        else:
+            self.utils.print_error("*** archive must be specified ***")
+            self.utils.print_msg("p3 mm.py create dbName import archive")
+            self.utils.print_msg("archive: Name of the SQL dump file in " + self.dDir)
+            self.utils.print_msg("archive must be specified without the .sql.tar.gz extension")
+            exit()
 
     def export(self, args):
         """ ./cdb.sh export database [archive] """
