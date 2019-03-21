@@ -76,6 +76,8 @@ class mm(object):
                 self.datadir()
             elif args[1] == "pc":
                 self.purgeCache()
+            elif args[1] == "ct":
+                self.runCronTask()
 
     def print_help(self):
         print("\n")
@@ -95,7 +97,7 @@ class mm(object):
         self.utils.print_msg("md archive folder", self.CBLUE)
         self.utils.print_msg("\tCreate a Moodle Data dir")
         self.utils.print_msg("\tarchive : name of the data dir archive without the tar.gz", self.CLBLUE)
-        self.utils.print_msg("\tfolder : new Moodle's data dir name in " + self.mDir, self.CLBLUE)
+        self.utils.print_msg("\tfolder : new Moodle's data dir name in " + self.mDir + "\n", self.CLBLUE)
 
         self.utils.print_msg("fixutf [SQL file]", self.CBLUE)
         self.utils.print_msg("\tFind and replace the varchar(x) column with a varchar(190)")
@@ -103,6 +105,19 @@ class mm(object):
 
         self.utils.print_msg("fix", self.CBLUE)
         self.utils.print_msg("\tFix Database collation, compress rows and clear MOODLE's cache\n")
+
+        self.utils.print_msg("ct task [showsql] [showdebugging]", self.CBLUE)
+        self.utils.print_msg("\tRun a Moodle cron task")
+        self.utils.print_msg("\ttask : The path to the task to run or group task name", self.CLBLUE)
+        self.utils.print_msg("\t       Task name:", self.CLBLUE)
+        self.utils.print_msg("\t       p3 mm.py ct '\\report_iomadanalytics\\task\\SystemOverview'", self.CLBLUE)
+        self.utils.print_msg("\t       Must input task in ''\n", self.CLBLUE)
+        self.utils.print_msg("\t       Task group:", self.CLBLUE)
+        self.utils.print_msg("\t       p3 mm.py ct completion     => Run course & activity completion task", self.CLBLUE)
+        self.utils.print_msg("\t       p3 mm.py ct iomadanalytics => Run report_iomadanalytics tasks", self.CLBLUE)
+        self.utils.print_msg("\t       p3 mm.py ct list           => List all available task", self.CLBLUE)
+        self.utils.print_msg("\tshowsql : Trigger the --showsql option. Default doesn't show SQL.", self.CLBLUE)
+        self.utils.print_msg("\tshowdebugging : Trigger the --showdebugging option. Default doesn't show debug.\n", self.CLBLUE)
 
         self.utils.print_msg("pc", self.CBLUE)
         self.utils.print_msg("\tPurge MOODLE's cache\n")
@@ -290,6 +305,44 @@ class mm(object):
             os.system("sed -i 's/ROW_FORMAT=COMPRESSED/ROW_FORMAT=DYNAMIC/g' " + dFile)
         else:
             self.utils.print_error("SQL file not found")
+
+    def runCronTask(self):
+        """
+        Run a Moodle cron task
+        p3 mm.py ct task | task_group
+        p3 mm.py ct \\report_iomadanalytics\\task\\SystemOverview
+        p3 mm.py ct completion
+        """
+        if 2 not in self.param:
+            self.utils.print_error("task path or group name must be specified.")
+            self.utils.print_msg("Read doc for task group name")
+            exit()
+
+        # Trigger the --showsql and --showdebugging switch. Off by default.
+        showsql = False
+        showdebugging = False
+        for i in [3, 4]:
+            if i in self.param:
+                if self.param[i] == 'showsql':
+                    showsql = True
+                if self.param[i] == 'showdebugging':
+                    showdebugging = True
+
+        if self.param[2] == 'completion':
+            taskToRun = [
+                '\\core\\task\\completion_daily_task',
+                '\\core\\task\\completion_regular_task'
+            ]
+        elif self.param[2] == 'iomadanalytics':
+            taskToRun = [
+                '\\report_iomadanalytics\\task\\GradesFilters',
+                '\\report_iomadanalytics\\task\\SystemOverview'
+            ]
+        else:
+            taskToRun = [self.param[2]]
+
+        for task in taskToRun:
+            self.utils.executeCronTask(task, showsql, showdebugging)
 
     def purgeCache(self):
         """
@@ -494,6 +547,38 @@ class utils(mm):
         os.system("/usr/bin/php {}".format(
             os.path.join(self.wd, "admin/cli/purge_caches.php")
         ))
+
+    def executeCronTask(self, task, showsql=False, showdebugging=False):
+        """
+        Execute a single cron task or list all available tasks
+        """
+
+        # Make sure we have a task
+        if len(task) == 0:
+            self.print_error("task path must be specified")
+            exit()
+
+        cron_script = os.path.join(os.getcwd(), "admin/tool/task/cli/schedule_task.php")
+
+        # List all available tasks in Moodle's cron task database
+        # or execute a specific task
+        if task == 'list':
+            os.system("/usr/bin/php " + cron_script + " --list")
+        else:
+            # Trigger the showsql switch
+            if showsql is True:
+                showSqlSwitch = ' --showsql'
+            else:
+                showSqlSwitch = ''
+
+            # Trigger the showdebugging switch
+            if showdebugging is True:
+                showDebuggingSwitch = ' --showdebugging'
+            else:
+                showDebuggingSwitch = ''
+
+            self.print_status(task)
+            os.system("/usr/bin/php " + cron_script + showSqlSwitch + showDebuggingSwitch + " --execute='" + task + "'")
 
     def getDbConn(self, dbName=""):
         """
