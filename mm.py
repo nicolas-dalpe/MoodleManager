@@ -564,6 +564,8 @@ class utils(mm):
         # or execute a specific task
         if task == 'list':
             os.system("/usr/bin/php " + cron_script + " --list")
+        elif task == 'all':
+            os.system("/usr/bin/php admin/cli/cron.php")
         else:
             # Trigger the showsql switch
             if showsql is True:
