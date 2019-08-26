@@ -13,7 +13,8 @@ Todo:
 """
 
 import getpass
-import MySQLdb as db
+# import MySQLdb as db
+import mysql.connector as mysql
 import os
 import sys
 import tarfile
@@ -134,7 +135,7 @@ class mm(object):
 
         # database name param is mandatory
         if 2 not in self.param:
-            self.utils.print_error("*** [dtabase] must be specified ***")
+            self.utils.print_error("*** [database] must be specified ***")
             self.utils.print_msg("p3 mm.py create dbName")
             self.utils.print_msg("dbName: Name of the database to create")
             exit()
@@ -142,7 +143,8 @@ class mm(object):
         dbName = self.param[2]
 
         # get a MySQL connection
-        cursor = self.utils.getDbConn(dbName)
+        db = self.utils.getDbConn(dbName)
+        cursor = db.cursor()
 
         self.utils.print_status("Setting innodb_default_row_format")
         cursor.execute("SET GLOBAL innodb_default_row_format = DYNAMIC;")
@@ -180,10 +182,10 @@ class mm(object):
 
         if 4 in self.param:
 
-            # tar of the MySQL dump to import
+            # archive's file name of the MySQL dump file to import
             archive = self.param[4] + '.sql.tar.gz'
 
-            # if the file exists, extract it from the archive
+            # if the archive exists, extract the SQL file from the archive
             if os.path.isfile(os.path.join(self.dDir, archive)):
                 self.utils.print_status("Starting import of {}".format(self.param[2]))
                 self.utils.print_status("Deflate {}".format(archive))
@@ -213,7 +215,8 @@ class mm(object):
             exit()
 
     def export(self, args):
-        """ ./cdb.sh export database [archive] """
+        """ ./mm.py export [database] [archive] """
+        """ Export a SQL file from [database] using mysqldump """
 
         # define dababase name
         dbName = args[2]
@@ -230,7 +233,8 @@ class mm(object):
         dFile = os.path.join(self.dDir, archive)
 
         # get a MySQL connection
-        cursor = self.utils.getDbConn(dbName)
+        db = self.utils.getDbConn(dbName)
+        cursor = db.cursor()
 
         # output moodle database as backup
         self.utils.print_status("Starting: MySQL Dump")
@@ -238,7 +242,7 @@ class mm(object):
 
         self.utils.print_status("Starting: Compress {}".format(archive))
 
-        # Change working dir
+        # Change working dir to /database dir
         os.chdir(self.dDir)
 
         # Compress MySQL dump
@@ -274,6 +278,7 @@ class mm(object):
         ))
 
         # purge Moodle's cache
+        self.utils.print_status("Purging Moodle's Cache")
         self.purgeCache()
 
     def fixutf(self, args):
@@ -590,11 +595,11 @@ class utils(mm):
         self.dbPassword = getpass.getpass('Please enter MySQL password:')
 
         if dbName != "":
-            MySQL = db.connect(user=self.dbUserName, passwd=self.dbPassword)
+            MySQLConn = mysql.connect(user=self.dbUserName, passwd=self.dbPassword)
         else:
-            MySQL = db.connect(user=self.dbUserName, passwd=self.dbPassword, db=dbName)
+            MySQLConn = mysql.connect(user=self.dbUserName, passwd=self.dbPassword, db=dbName)
 
-        return MySQL.cursor()
+        return MySQLConn
 
     def cargs(self, args):
         """
