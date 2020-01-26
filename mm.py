@@ -18,10 +18,10 @@ class mm(object):
     dDir = os.path.join(os.getcwd(), 'backup/database')
 
     # Default vagrant directory
-    vDir = "/home/ndalpe/w/stretch64"
+    vDir = "/Users/ndalpe/w/stretch64/"
 
     # Default git repository directory
-    rDir = "/home/ndalpe/w/Repositories"
+    rDir = "/Users/ndalpe/w/Repositories"
 
     # Default location of Moodle's data directory
     mDir = "/var/www"
@@ -176,8 +176,18 @@ class mm(object):
                 self.utils.print_status("Starting import of {}".format(self.param[2]))
                 self.utils.print_status("Deflate {}".format(archive))
                 os.chdir(self.dDir)
+
+                # open the archive
                 tf = tarfile.open(archive)
+
+                # Get the database dump file name in the archive
+                # The archive must be the first file in the archive
                 dumpFile = tf.getnames()[0]
+
+                # Remove the ._ string that Mac add at the begining of the file name in the archive name
+                if dumpFile.count('._'):
+                    dumpFile = dumpFile[2:]
+
                 tf.extractall()
 
                 # import the extracted dump file into the database
