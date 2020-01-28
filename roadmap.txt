@@ -1,0 +1,5 @@
+To do:
+
+Write template name
+ - Write the template path+name on the first line of *.mustache tpl in Remui theme
+ - To undo git checkout theme/remui/*
