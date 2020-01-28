@@ -1,17 +1,3 @@
-"""
-Todo:
-    deplyment script
-     - create DB
-     - GRANT ALL PRIVILEGES ON {new database} . * TO '{user}'@'localhost';
-     - import SQL
-     - copy md_xxx
-     - chmod + chown md_xxx
-     - tar -x new_website.tar.gz
-     - chown -R apache:webadmin report/iomadfollowup/download/
-     - chmod -R g+w download/
-     - chmod -R a+x download/
-"""
-
 import getpass
 # import MySQLdb as db
 import mysql.connector as mysql

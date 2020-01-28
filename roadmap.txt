@@ -3,3 +3,11 @@ To do:
 Write template name
  - Write the template path+name on the first line of *.mustache tpl in Remui theme
  - To undo git checkout theme/remui/*
+
+Deployment script
+ - Create DB
+ - GRANT ALL PRIVILEGES ON {new database} . * TO '{user}'@'localhost';
+ - Import SQL
+ - Copy md_xxx
+ - chmod + chown md_xxx
+ - git checkout remote branch
