@@ -13,6 +13,10 @@ Write template name
 Create a function to trigger debug
  - use admin/cli/cfg.php --name=function --set=value
 
+Create a function that check files integrity
+ - Check files that are in files table and not on the drive
+ - Check files that on the drive and not in the file table
+
 Suggest .sql.tar.gz
  - When creating a databases and the import statement is specified
    find *.sql.tar.gz and allow choose 1, 2, 3, etc
