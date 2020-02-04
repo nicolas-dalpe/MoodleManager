@@ -1,3 +1,29 @@
+"""
+ROADMAP
+
+To do:
+
+Write template name
+ 1 - Git stash save -m str("mm:"+md5('mm')) - allow git checkout to remove the tpl name
+ 2 - Write the template path+name on the first line of /folder/*.mustache tpl in specified folder
+     ....
+ 3 - To undo git checkout theme/remui/*
+ 4 - git stash pop
+
+Suggest .sql.tar.gz
+ - When creating a databases and the import statement is specified
+   find *.sql.tar.gz and allow choose 1, 2, 3, etc
+
+Deployment script
+ - Create DB
+ - GRANT ALL PRIVILEGES ON {new database} . * TO '{user}'@'localhost';
+ - Import SQL
+ - Copy md_xxx
+ - chmod + chown md_xxx
+ - git checkout remote branch
+
+"""
+
 import getpass
 # import MySQLdb as db
 import mysql.connector as mysql
