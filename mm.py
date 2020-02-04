@@ -10,6 +10,9 @@ Write template name
  3 - To undo git checkout theme/remui/*
  4 - git stash pop
 
+Create a function to trigger debug
+ - use admin/cli/cfg.php --name=function --set=value
+
 Suggest .sql.tar.gz
  - When creating a databases and the import statement is specified
    find *.sql.tar.gz and allow choose 1, 2, 3, etc
