@@ -3,6 +3,9 @@ ROADMAP
 
 To do:
 
+Create an SSH update/download method
+ - p mm.py ssh dev|staging|live ul|dl remote_file local_file
+
 Write template name
  1 - Git stash save -m str("mm:"+md5('mm')) - allow git checkout to remove the tpl name
  2 - Write the template path+name on the first line of /folder/*.mustache tpl in specified folder
