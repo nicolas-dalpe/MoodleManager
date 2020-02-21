@@ -292,8 +292,9 @@ class mm(object):
 
         self.utils.print_status("Task Completed")
 
-        # list the backup/database folder
-        os.system("ls -l {}".format(self.dDir))
+        # list the database folder
+        self.utils.print_status("Listing: " + self.dDir)
+        os.system("ls -lh {}".format(self.dDir))
 
     def fix(self, args):
         """
