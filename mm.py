@@ -3,6 +3,12 @@ ROADMAP
 
 To do:
 
+Add shebang
+!/usr/bin/env python3
+./mm.py
+
+Use vagrant/vagrant as DB creds if not entered
+
 Create an SSH update/download method
  - p mm.py ssh dev|staging|live ul|dl remote_file local_file
 
