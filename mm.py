@@ -5,7 +5,7 @@ To do:
 
 Add shebang
 !/usr/bin/env python3
-./mm.py
+chmod +x ./mm.py
 
 Use vagrant/vagrant as DB creds if not entered
 
@@ -16,10 +16,14 @@ Export diff log format
  - short insert on one line
  - long insert statement on one line
 
+Export
+ - List dir after export using os.path.listdir()
+ - highlight the generated file
+
 Write template name
  1 - Git stash save -m str("mm:"+md5('mm')) - allow git checkout to remove the tpl name
  2 - Write the template path+name on the first line of /folder/*.mustache tpl in specified folder
-     ....
+     ...
  3 - To undo git checkout theme/remui/*
  4 - git stash pop
 
