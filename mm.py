@@ -79,6 +79,11 @@ class mm(object):
     # passed parameter to the script
     param = ''
 
+    # Add default database credentials so we don't have to
+    # supply them everytime at the prompt
+    default_db_username = 'vagrant'
+    default_db_password = 'vagrant'
+
     # color code \x1b[38;2;R;G;Bm
     CRED = "\x1b[38;2;176;0;32m"
     CBLUE = "\x1b[38;2;36;123;160m"
@@ -638,8 +643,16 @@ class utils(mm):
         """
         Get a database connect and return cursor
         """
+
+        # if username is not suplied, use the default database username
         self.dbUserName = input("Please enter MySQL username: ")
+        if self.dbUserName == "":
+            self.dbUserName = self.default_db_username
+
+        # if password is not suplied, use the default database password
         self.dbPassword = getpass.getpass('Please enter MySQL password:')
+        if self.dbPassword == "":
+            self.dbPassword = self.default_db_password
 
         if dbName != "":
             MySQLConn = mysql.connect(user=self.dbUserName, passwd=self.dbPassword)
