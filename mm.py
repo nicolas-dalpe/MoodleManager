@@ -645,12 +645,12 @@ class utils(mm):
         """
 
         # if username is not suplied, use the default database username
-        self.dbUserName = input("Please enter MySQL username: ")
+        self.dbUserName = input("Please enter MySQL username ({}): ".format(self.default_db_username))
         if self.dbUserName == "":
             self.dbUserName = self.default_db_username
 
         # if password is not suplied, use the default database password
-        self.dbPassword = getpass.getpass('Please enter MySQL password:')
+        self.dbPassword = getpass.getpass('Please enter MySQL password ({}):'.format(self.default_db_password))
         if self.dbPassword == "":
             self.dbPassword = self.default_db_password
 
