@@ -7,8 +7,6 @@ Add shebang
 !/usr/bin/env python3
 chmod +x ./mm.py
 
-Use vagrant/vagrant as DB creds if not entered
-
 Create an SSH update/download method
  - p mm.py ssh dev|staging|live ul|dl remote_file local_file
 
@@ -46,6 +44,9 @@ Deployment script
  - chmod + chown md_xxx
  - git checkout remote branch
 
+Done:
+ - Use vagrant/vagrant as DB creds if not entered
+
 """
 
 import getpass
@@ -65,13 +66,7 @@ class mm(object):
     wd = os.getcwd()
 
     # Default database directory
-    dDir = os.path.join(os.getcwd(), 'backup/database')
-
-    # Default vagrant directory
-    vDir = "/Users/ndalpe/w/stretch64/"
-
-    # Default git repository directory
-    rDir = "/Users/ndalpe/w/Repositories"
+    dDir = os.path.join(os.getcwd(), 'backup')
 
     # Default location of Moodle's data directory
     mDir = "/var/www"
@@ -208,7 +203,7 @@ class mm(object):
         self.utils.print_status("Setting innodb_large_prefix")
         cursor.execute("SET GLOBAL innodb_large_prefix=1;")
 
-        self.utils.print_status("Droping database {}.".format(dbName))
+        self.utils.print_status("Dropping database {}.".format(dbName))
         cursor.execute("DROP DATABASE IF EXISTS " + dbName + ";")
         self.utils.print_status("Database {} dropped.".format(dbName))
 
