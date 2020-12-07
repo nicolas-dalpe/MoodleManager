@@ -115,6 +115,8 @@ class mm(object):
                 self.purgeCache()
             elif args[1] == "ct":
                 self.runCronTask()
+            elif args[1] == "cfg":
+                self.cfg(args)
 
     def print_help(self):
         print("\n")
@@ -130,6 +132,14 @@ class mm(object):
         self.utils.print_msg("\tExport the content of a database into a SQL file and compress it")
         self.utils.print_msg("\tdatabase : Database name", self.CLBLUE)
         self.utils.print_msg("\tarchive  : Archive file name. Default is database name.\n", self.CLBLUE)
+
+        self.utils.print_msg("cfg [env]", self.CBLUE)
+        self.utils.print_msg("\tSet a series of config for env")
+        self.utils.print_msg("\tlocal : Config for localhost", self.CLBLUE)
+
+        self.utils.print_msg("cfg [name] [value]", self.CBLUE)
+        self.utils.print_msg("\tSet config for specified single value")
+        self.utils.print_msg("\tie: smtphosts 1.1.1.1 : To set smtphosts", self.CLBLUE)
 
         self.utils.print_msg("md archive folder", self.CBLUE)
         self.utils.print_msg("\tCreate a Moodle Data dir")
@@ -162,6 +172,25 @@ class mm(object):
         self.utils.print_msg("plugin [force]", self.CBLUE)
         self.utils.print_msg("\tInstall missing plugin from Github and add them to .gitignore")
         self.utils.print_msg("\tforce : Delete plugin if it exists \n", self.CLBLUE)
+
+    def cfg(self, args):
+
+        config = self.param[2]
+
+        settings = {
+            "local" : [
+                ["smtphosts", "192.168.33.10:1025"]
+            ]
+            # "dev" : [
+            #     ["setting name", "setting value"],
+            # ]
+        }
+
+        if config in settings:
+            for setting_name, setting_value in enumerate(settings[config]):
+                self.utils.writeSetting(setting_value[0], setting_value[1])
+        else:
+            self.utils.writeSetting(self.param[2], self.param[3])
 
     def create(self, args):
         """
@@ -590,6 +619,18 @@ class utils(mm):
                 print(msg)
             else:
                 print(color + msg + self.CEND)
+
+    def writeSetting(self, settingName, settingValue):
+        """
+        Write a single setting
+        """
+        self.print_status("Setting {} to {}".format(settingName, settingValue))
+        os.system("{} {} --name={} --set={}".format(
+            self.php,
+            os.path.join(self.wd, "admin/cli/cfg.php"),
+            settingName,
+            settingValue
+        ))
 
     def purgeMoodleCache(self):
         """
