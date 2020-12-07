@@ -152,11 +152,11 @@ class mm(object):
 
         self.utils.print_msg("cfg [env]", self.CBLUE)
         self.utils.print_msg("\tSet a series of config for env")
-        self.utils.print_msg("\tlocal : Config for localhost", self.CLBLUE)
+        self.utils.print_msg("\tlocal : Config for localhost\n", self.CLBLUE)
 
         self.utils.print_msg("cfg [name] [value]", self.CBLUE)
         self.utils.print_msg("\tSet config for specified single value")
-        self.utils.print_msg("\tie: smtphosts 1.1.1.1 : To set smtphosts", self.CLBLUE)
+        self.utils.print_msg("\tie: smtphosts 1.1.1.1 : To set smtphosts\n", self.CLBLUE)
 
         self.utils.print_msg("md archive folder", self.CBLUE)
         self.utils.print_msg("\tCreate a Moodle Data dir")
