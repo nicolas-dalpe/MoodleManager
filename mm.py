@@ -10,6 +10,10 @@ chmod +x ./mm.py
 Create an SSH update/download method
  - p mm.py ssh dev|staging|live ul|dl remote_file local_file
 
+Create vagrant database user
+ - CREATE USER 'vagrant'@'localhost' IDENTIFIED BY 'vagrant';
+ - GRANT ALL PRIVILEGES ON *.* TO 'vagrant'@'localhost';
+
 Export diff log format
  - short insert on one line
  - long insert statement on one line
@@ -74,10 +78,16 @@ class mm(object):
     # passed parameter to the script
     param = ''
 
+    # PHP path
+    php = "/usr/bin/php"
+
     # Add default database credentials so we don't have to
     # supply them everytime at the prompt
     default_db_username = 'vagrant'
     default_db_password = 'vagrant'
+
+    # HTML tpl for the template path
+    tpl_path_container = "<span style=\"background-color:#1177d1!important; color:#FFF!important;align-self:flex-start;padding:10px;z-index:9999;\">{}</span>\n"
 
     # color code \x1b[38;2;R;G;Bm
     CRED = "\x1b[38;2;176;0;32m"
@@ -115,6 +125,8 @@ class mm(object):
                 self.purgeCache()
             elif args[1] == "ct":
                 self.runCronTask()
+            elif args[1] == "tpl":
+                self.tpl(args)
             elif args[1] == "cfg":
                 self.cfg(args)
 
@@ -127,6 +139,11 @@ class mm(object):
         self.utils.print_msg("\timport   : Import SQL switch.", self.CLBLUE)
         self.utils.print_msg("\tarchive  : File to import (without .sql.tar.gz)", self.CLBLUE)
         self.utils.print_msg("                   Default backup/database/database.sql.tar.gz\n", self.CLBLUE)
+
+        self.utils.print_msg("tpl [write|reset] [folder]", self.CBLUE)
+        self.utils.print_msg("\tDesc : Write the template path into the mustache tpl")
+        self.utils.print_msg("\t[write|reset] write or remove the tpl path in the tpl file", self.CLBLUE)
+        self.utils.print_msg("\t[folder] only templates within the specified folder will be written\n", self.CLBLUE)
 
         self.utils.print_msg("export database [archive]", self.CBLUE)
         self.utils.print_msg("\tExport the content of a database into a SQL file and compress it")
@@ -191,6 +208,55 @@ class mm(object):
                 self.utils.writeSetting(setting_value[0], setting_value[1])
         else:
             self.utils.writeSetting(self.param[2], self.param[3])
+
+    def tpl(self, args):
+        """ Write the template path into the mustache tpl """
+        """ tpl [write|reset] [folder] """
+
+        # check if we are writing or removing the tpl path in the files
+        action = self.param[2]
+        if action == "write":
+            self.writeTpl(args)
+        else:
+            self.resetTpl(args)
+
+    def writeTpl(self, args):
+        """ Write the path of the template in the specified folder """
+
+        # get the folder to work with
+        if 3 in self.param:
+            param_folder = self.param[3]
+        else:
+            self.utils.print_error("*** [folder] must be specified ***")
+            self.utils.print_msg("ie: mm.py tpl write theme/boost")
+            exit()
+
+        directory = os.path.join(self.wd, param_folder)
+
+        for tplFile in os.listdir(directory):
+
+            if tplFile.endswith(".mustache"):
+                tpl_full_path = os.path.join(directory, tplFile)
+
+                # Get the template content
+                original_tpl = self.utils.get_file_content(tpl_full_path)
+
+                # Get the html template to insert
+                marker = self.tpl_path_container.format(tpl_full_path)
+
+                # Write the template content with the marker
+                modified = self.utils.write_file_content(tpl_full_path, marker + original_tpl)
+                continue
+            else:
+                continue
+
+        # Purge all Moodle's cache
+        self.purgeCache()
+
+    def resetTpl(self, args):
+        """ Reset/remove the template path from the template files """
+        """ using git checkout """
+        print(args)
 
     def create(self, args):
         """
@@ -597,6 +663,21 @@ class mm(object):
 class utils(mm):
     def __init__(self):
         pass
+
+    def get_file_content(self, param_file):
+        """ Return the content of a file """
+        with open(param_file, 'r') as file:
+            original_tpl = file.read()
+            file.close()
+        return original_tpl
+
+    def write_file_content(self, param_file, content):
+        """ Write content into param_file """
+        with open(param_file, 'w') as file:
+            self.print_status("Writing: " + file.name)
+            file.write(content)
+            file.close()
+        return True
 
     def print_error(self, msg):
         """
