@@ -158,6 +158,10 @@ class mm(object):
         self.utils.print_msg("\tSet config for specified single value")
         self.utils.print_msg("\tie: smtphosts 1.1.1.1 : To set smtphosts\n", self.CLBLUE)
 
+        self.utils.print_msg("cfg get [config name]", self.CBLUE)
+        self.utils.print_msg("\tGet the value for the specified config")
+        self.utils.print_msg("\tie: p mm.py cfg get digestmailtime\n", self.CLBLUE)
+
         self.utils.print_msg("md archive folder", self.CBLUE)
         self.utils.print_msg("\tCreate a Moodle Data dir")
         self.utils.print_msg("\tarchive : name of the data dir archive without the tar.gz", self.CLBLUE)
@@ -196,18 +200,23 @@ class mm(object):
 
         settings = {
             "local" : [
-                ["smtphosts", "192.168.33.10:1025"]
+                ["smtphosts", "192.168.33.10:1025"],
+                ["noreplyaddress", "nicolas.dalpe@knowledgeone.ca"]
             ]
             # "dev" : [
             #     ["setting name", "setting value"],
             # ]
         }
 
+        if config == "get":
+            self.utils.getConfig(self.param[3])
+            sys.exit()
+
         if config in settings:
             for setting_name, setting_value in enumerate(settings[config]):
-                self.utils.writeSetting(setting_value[0], setting_value[1])
+                self.utils.setConfig(setting_value[0], setting_value[1])
         else:
-            self.utils.writeSetting(self.param[2], self.param[3])
+            self.utils.setConfig(self.param[2], self.param[3])
 
     def tpl(self, args):
         """ Write the template path into the mustache tpl """
@@ -701,7 +710,18 @@ class utils(mm):
             else:
                 print(color + msg + self.CEND)
 
-    def writeSetting(self, settingName, settingValue):
+    def getConfig(self, configName):
+        """
+        Get a single setting
+        """
+        self.print_status("Getting {}".format(configName))
+        os.system("{} {} --name={}".format(
+            self.php,
+            os.path.join(self.wd, "admin/cli/cfg.php"),
+            configName
+        ))
+
+    def setConfig(self, settingName, settingValue):
         """
         Write a single setting
         """
