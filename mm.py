@@ -83,6 +83,8 @@ class mm(object):
 
     # Add default database credentials so we don't have to
     # supply them everytime at the prompt
+    # CREATE USER 'vagrant'@localhost IDENTIFIED BY 'vagrant';
+    # GRANT ALL PRIVILEGES ON *.* TO 'vagrant'@localhost IDENTIFIED BY 'vagrant';
     default_db_username = 'vagrant'
     default_db_password = 'vagrant'
 
