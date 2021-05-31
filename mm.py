@@ -291,6 +291,7 @@ class mm(object):
         self.utils.print_status("Setting innodb_default_row_format")
         cursor.execute("SET GLOBAL innodb_default_row_format = DYNAMIC;")
 
+        # Full UTF-8 support.
         self.utils.print_status("Setting collation_server")
         cursor.execute("SET GLOBAL collation_server = utf8mb4_unicode_ci;")
 
@@ -300,19 +301,15 @@ class mm(object):
         self.utils.print_status("Setting collation_connection")
         cursor.execute("SET GLOBAL collation_connection = utf8mb4_unicode_ci;")
 
-        self.utils.print_status("Setting innodb_file_format")
-        cursor.execute("SET GLOBAL innodb_file_format=Barracuda;")
-
         self.utils.print_status("Setting innodb_file_per_table")
         cursor.execute("SET GLOBAL innodb_file_per_table=1;")
 
-        self.utils.print_status("Setting innodb_large_prefix")
-        cursor.execute("SET GLOBAL innodb_large_prefix=1;")
-
+        # Drop database if it exists.
         self.utils.print_status("Dropping database {}.".format(dbName))
         cursor.execute("DROP DATABASE IF EXISTS " + dbName + ";")
         self.utils.print_status("Database {} dropped.".format(dbName))
 
+        # Create new database.
         self.utils.print_status("Creating database {}.".format(dbName))
         cursor.execute("CREATE DATABASE " + dbName + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
         self.utils.print_status("Database {} created.".format(dbName))
