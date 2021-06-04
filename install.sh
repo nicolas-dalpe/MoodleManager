@@ -4,16 +4,16 @@ python3 mm.py create db_ec_moodle310
 php admin/cli/install.php --lang=en --wwwroot=https://moodle.local --dataroot=/var/www/md_ec_moodle310 --fullname=Sandbox --shortname=sb --adminuser=admin --adminpass=Abc123Def456 --adminemail=nicolas.dalpe@knowledgeone.ca --agree-license=yes
 
 # config.php
-php admin/cli/install_database.php --fullname=Moodle310 --shortname=310 --lang=en --adminuser=admin --adminpass=Abc123\!\@\# --adminemail=admin.user@knowledgeone.ca --agree-license=yes
+php admin/cli/install_database.php --fullname=QR Phase3 Moodle396 --shortname=QR396 --lang=en --adminuser=admin --adminpass=Abc123\!\@\# --adminemail=admin.user@knowledgeone.ca --agree-license=yes
 
 # Moosh commands
-moosh course-create --category 1 --fullname "IT Subplugin" ITSub
+moosh course-create --category 1 --fullname "QR Code" QRC
 moosh user-create --password Abc123\!\@\# --email nicolas.dalpe@knowledgeone.ca --digest 2 --city Montreal --country CA --firstname "Nicolas" --lastname "Dalpe" nicolas.dalpe
-moosh course-enrolbyname -r editingteacher -f nicolas -l dalpe -c ITSub
+moosh course-enrolbyname -r editingteacher -f nicolas -l dalpe -c QRC
 
 moosh user-create --password Abc123\!\@\# --email student1@knowledgeone.ca --digest 2 --city Montreal --country CA --firstname "Student" --lastname "One" student1
 moosh user-create --password Abc123\!\@\# --email student2@knowledgeone.ca --digest 2 --city Montreal --country CA --firstname "Student" --lastname "Two" student2
-moosh course-enrol 2 student1 student2
+moosh course-enrol 3 student1 student2
 
 # Force users to log in
 # Normally, the front page of the site and the course listings (but not courses)
@@ -68,7 +68,7 @@ php admin/cli/cfg.php --name=allowindexing --set=2
 # This setting customises the name of the cookie used for Moodle sessions.
 # This is optional, and only useful to avoid cookies being confused when
 # there is more than one copy of Moodle running within the same web site.
-php admin/cli/cfg.php --name=sessioncookie --set=domain
+php admin/cli/cfg.php --name=sessioncookie --set=moodlelocal
 
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates for
@@ -88,3 +88,29 @@ php admin/cli/cfg.php --name=updateautocheck --set=0
 # then you may want to switch this off. Otherwise leave it on to see
 # performance benefits.
 php admin/cli/cfg.php --name=langstringcache --set=0
+
+# Analytics
+# Analytics models, such as 'Students at risk of dropping out' or 'Upcoming activities due',
+# can generate predictions, send insight notifications and offer further actions
+# such as messaging users.
+php admin/cli/cfg.php --name=enableanalytics --set=0
+
+# Enable statistics
+# If you choose 'yes' here, Moodle's cronjob will process the logs and gather some statistics.
+# Depending on the amount of traffic on your site, this can take awhile. If you enable this,
+# you will be able to see some interesting graphs and statistics about each of your courses,
+# or on a sitewide basis.
+php admin/cli/cfg.php --name=enablestats --set=0
+
+
+# Networking
+# MNet allows communication of this server with other servers or services.
+php admin/cli/cfg.php --name=mnet_dispatcher_mode --set=off
+
+# KeyboardEvent
+# The default keyboard shortcut for local Commander plugin.
+php admin/cli/cfg.php --component=local_commander --name=keys --set=32
+
+# Plugin Skel
+php admin/cli/cfg.php --component=tool_pluginskel --name=copyright --set=""`date +"%Y"`" KnowledgeOne <nicolas.dalpe@knowledgeone.ca>"
+php admin/cli/cfg.php --component=tool_pluginskel --name=version --set=""`date +"%Y%0m%0d"`"00"
