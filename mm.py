@@ -203,7 +203,18 @@ class mm(object):
         settings = {
             "local" : [
                 ["smtphosts", "192.168.33.10:1025"],
-                ["noreplyaddress", "nicolas.dalpe@knowledgeone.ca"]
+                ["noreplyaddress", "nicolas.dalpe@knowledgeone.ca"],
+                ["forcelogin", "1"],
+                ["country", "CA"],
+                ["defaultcity", "Montreal"],
+                ["timezone", "America/New_York"],
+                ["frontpage", "none"],
+                ["guestloginbutton", "0"],
+                ["opentowebcrawlers", "0"],
+                ["allowindexing", "2"],
+                ["updateautocheck", "0"],
+                ["enableanalytics", "0"],
+                ["enablestats", "0"],
             ]
             # "dev" : [
             #     ["setting name", "setting value"],
@@ -713,7 +724,6 @@ class utils(mm):
         """
         Get a single setting
         """
-        self.print_status("Getting {}".format(configName))
         os.system("{} {} --name={}".format(
             self.php,
             os.path.join(self.wd, "admin/cli/cfg.php"),
@@ -731,6 +741,10 @@ class utils(mm):
             settingName,
             settingValue
         ))
+
+        self.print_status(
+            "{} is now set to {}.".format(settingName, self.getConfig(settingName))
+        )
 
     def purgeMoodleCache(self):
         """
