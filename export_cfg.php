@@ -4,8 +4,10 @@ require('config.php');
 require('lib/clilib.php');
 
 $usage = "
+
 php export_cfg.php --all
 Export the config for Moodle core components and the plugins.
+Can easily go up to 3,000 commands. You may want to > it into a file.
 
 php export_cfg.php --plugins
 Export the config for the plugins.
@@ -14,7 +16,9 @@ php export_cfg.php --component=xxx
 Export the config for this particular component.
 
 php export_cfg.php --all > settings.conf
-On Linux use the > operator to redirect the output to a file.
+On Linux, use the > operator to redirect the output to a file.
+
+
 ";
 
 list($options, $unrecognized) = cli_get_params(
@@ -22,9 +26,10 @@ list($options, $unrecognized) = cli_get_params(
         'all' => false,
         'component' => false,
         'help' => false,
-        'plugins' =>false
+        'plugins' =>false,
+        'verbose' => false
     ],
-    ['h' => 'help']
+    ['h' => 'help', 'v' => 'verbose', 'a' => 'all']
 );
 
 // If no param is passed or help is requested.
@@ -71,7 +76,7 @@ if (is_array($components)) {
 echo $output;
 
 function output_settings($component) {
-    global $php, $status;
+    global $php, $options, $status;
 
     // Contains the output of the cfg.php
     $cmdLineOutput = array();
@@ -98,12 +103,37 @@ function output_settings($component) {
         //     return "";
         // }
 
+        $settingsToIgnore = array(
+            // Core - database
+            'dbtype', 'dblibrary', 'dbhost', 'dbname', 'dbuser', 'dbpass', 'prefix', 'wwwroot',
+            // Core - file permissions
+            'directorypermissions', 'dirroot', 'filepermissions', 'umaskpermissions',
+            // Core - path
+            'dataroot', 'libdir', 'tempdir', 'backuptempdir', 'cachedir', 'localcachedir', 'localrequestdir', 'langotherroot', 'langlocalroot',
+            'noreplyaddress', 'chat_serverhost', 'sessioncookie', 'pathtogs', 'geoip2file', 'auth_instructions',
+            // Core - OS path
+            'pathtounoconv',
+            // Core - SMTP
+            'smtphosts', 'smtpsecure', 'smtpauthtype', 'smtpuser', 'smtppass', 'smtpmaxbulk',
+            // mod_lti
+            'kid', 'privatekey',
+            // filter_tex
+            'pathconvert', 'pathdvips', 'pathdvisvgm', 'pathlatex',
+        );
+
         foreach ($objCmdLineOutput as $name => $set) {
-            $commands .= sprintf(
-                "%s admin/cli/cfg.php --component=%s --name=%s --set=%s\n",
-                $php, $component, $name, escapeshellarg($set)
-            );
+            if (!in_array($name, $settingsToIgnore)) {
+                $commands .= sprintf(
+                    "%s admin/cli/cfg.php --component=%s --name=%s --set=%s\n",
+                    $php, $component, $name, escapeshellarg($set)
+                );
+            }
         }
+    }
+
+    // Output exported module if verbose is on.
+    if ($options['verbose']) {
+        cli_writeln('Exporting : ' . $component . ' --> Done.', STDERR);
     }
 
     return $commands;
