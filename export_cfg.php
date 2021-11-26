@@ -119,6 +119,10 @@ function output_settings($component) {
             'kid', 'privatekey',
             // filter_tex
             'pathconvert', 'pathdvips', 'pathdvisvgm', 'pathlatex',
+            // Poodll user and secret
+            'cpapiuser', 'cpapisecret',
+            // auth_econcordia
+            'jwt_key', 'token_validation_url', 'login_validation_url', 'host'
         );
 
         foreach ($objCmdLineOutput as $name => $set) {
