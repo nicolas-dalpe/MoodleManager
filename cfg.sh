@@ -69,7 +69,7 @@ php admin/cli/cfg.php --name=allowindexing --set=2
 # This setting customises the name of the cookie used for Moodle sessions.
 # This is optional, and only useful to avoid cookies being confused when
 # there is more than one copy of Moodle running within the same web site.
-php admin/cli/cfg.php --name=sessioncookie --set=moodlelocal
+php admin/cli/cfg.php --name=sessioncookie --set=moodleeconcom
 
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates for
