@@ -110,7 +110,9 @@ function output_settings($component) {
             'directorypermissions', 'dirroot', 'filepermissions', 'umaskpermissions',
             // Core - path
             'dataroot', 'libdir', 'tempdir', 'backuptempdir', 'cachedir', 'localcachedir', 'localrequestdir', 'langotherroot', 'langlocalroot',
-            'noreplyaddress', 'chat_serverhost', 'sessioncookie', 'pathtogs', 'geoip2file', 'auth_instructions',
+            'noreplyaddress', 'chat_serverhost', 'pathtogs', 'geoip2file', 'auth_instructions',
+            // Cookie
+            'sessioncookie','sessioncookiepath', 'sessioncookiedomain'
             // Core - OS path
             'pathtounoconv',
             // Core - SMTP
