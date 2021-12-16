@@ -145,6 +145,13 @@ function output_settings($component) {
     return $commands;
 }
 
+/**
+ * Get the individual plugin name.
+ *
+ * @param str $extra Extra plugin to include such as core.
+ *
+ * @return array $components The plugins list.
+ */
 function get_config_plugins($extra = false) {
     global $CFG, $DB;
 
