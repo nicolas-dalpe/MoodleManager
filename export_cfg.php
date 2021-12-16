@@ -104,6 +104,9 @@ function output_settings($component) {
         // }
 
         $settingsToIgnore = array(
+            // Core
+            'siteidentifier', 'supportemail', 'siteadmins', 'themerev', 'jsrev', 'langrev', 'localcachedirpurged', 'scheduledtaskreset', 'allversionshash',
+            'fileslastcleanup', 'digestmailtimelast', 'scorm_updatetimelast', 'templaterev', 'noemailever', 'auth', 'enrol_plugins_enabled',
             // Core - database
             'dbtype', 'dblibrary', 'dbhost', 'dbname', 'dbuser', 'dbpass', 'prefix', 'wwwroot',
             // Core - file permissions
@@ -111,12 +114,12 @@ function output_settings($component) {
             // Core - path
             'dataroot', 'libdir', 'tempdir', 'backuptempdir', 'cachedir', 'localcachedir', 'localrequestdir', 'langotherroot', 'langlocalroot',
             'noreplyaddress', 'chat_serverhost', 'pathtogs', 'geoip2file', 'auth_instructions',
-            // Cookie
-            'sessioncookie','sessioncookiepath', 'sessioncookiedomain',
             // Core - OS path
             'pathtounoconv',
             // Core - SMTP
             'smtphosts', 'smtpsecure', 'smtpauthtype', 'smtpuser', 'smtppass', 'smtpmaxbulk',
+            // Cookie
+            'sessioncookie','sessioncookiepath', 'sessioncookiedomain',
             // mod_lti
             'kid', 'privatekey',
             // filter_tex
@@ -124,7 +127,15 @@ function output_settings($component) {
             // Poodll user and secret
             'cpapiuser', 'cpapisecret',
             // auth_econcordia
-            'jwt_key', 'token_validation_url', 'login_validation_url', 'host'
+            'jwt_key', 'token_validation_url', 'login_validation_url', 'host',
+            // Moodle features
+            'enablestats', 'allowindexing', 'allowguestmymoodle', 'debug', 'debugdisplay', 'perfdebug', 'debugstringids', 'debugvalidators', 'debugpageinfo', 'loglifetime',
+            // Cron
+            'lastcroninterval', 'lastcronstart',
+            // H5P
+            'site_uuid', 'recentfetch', 'recentresponse', 
+            // custom theme
+            'adfsurl'
         );
 
         foreach ($objCmdLineOutput as $name => $set) {
