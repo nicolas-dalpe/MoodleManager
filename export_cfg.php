@@ -133,23 +133,31 @@ function output_settings($component) {
             // Cron
             'lastcroninterval', 'lastcronstart',
             // H5P
-            'site_uuid', 'recentfetch', 'recentresponse', 
+            'site_uuid', 'recentfetch', 'recentresponse',
             // custom theme
             'adfsurl'
         );
 
         foreach ($objCmdLineOutput as $name => $set) {
             if (!in_array($name, $settingsToIgnore)) {
+                // Create the command to set the value.
                 $commands .= sprintf(
                     "%s admin/cli/cfg.php --component=%s --name=%s --set=%s\n",
                     $php, $component, $name, escapeshellarg($set)
                 );
+
+                // Display the new value for the setting when importing.
+                if ($options['verbose']) {
+                    $commands .= 'echo -n "' . $name . ' of ' . $component . ' is set to: "' . "\n";
+                    $commands .= sprintf("%s admin/cli/cfg.php --component=%s --name=%s\n\n", $php, $component, $name);
+                }
             }
         }
     }
 
     // Output exported module if verbose is on.
     if ($options['verbose']) {
+        // Output the component being exported when in verbose mode.
         cli_writeln('Exporting : ' . $component . ' --> Done.', STDERR);
     }
 
