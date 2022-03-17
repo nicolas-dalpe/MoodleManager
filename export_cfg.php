@@ -68,14 +68,15 @@ $status = -1;
 $output = '';
 
 if (is_array($components)) {
-    foreach($components as $value) {
-        $output .= output_settings($value);
+    $totalComponents = count($components);
+    foreach($components as $key => $value) {
+        $output .= output_settings($value, $key, $totalComponents);
     }
 }
 
 echo $output;
 
-function output_settings($component) {
+function output_settings($component, $index, $totalComponents) {
     global $php, $options, $status;
 
     // Contains the output of the cfg.php
@@ -107,6 +108,7 @@ function output_settings($component) {
             // Core
             'siteidentifier', 'supportemail', 'siteadmins', 'themerev', 'jsrev', 'langrev', 'localcachedirpurged', 'scheduledtaskreset', 'allversionshash',
             'fileslastcleanup', 'digestmailtimelast', 'scorm_updatetimelast', 'templaterev', 'noemailever', 'auth', 'enrol_plugins_enabled',
+            'cronremotepassword', 'secretphrase', 'recaptchapublickey', 'recaptchaprivatekey', 'allowedip', 'blockedip',
             // Core - database
             'dbtype', 'dblibrary', 'dbhost', 'dbname', 'dbuser', 'dbpass', 'prefix', 'wwwroot',
             // Core - file permissions
@@ -117,7 +119,7 @@ function output_settings($component) {
             // Core - OS path
             'pathtounoconv',
             // Core - SMTP
-            'smtphosts', 'smtpsecure', 'smtpauthtype', 'smtpuser', 'smtppass', 'smtpmaxbulk',
+            'smtphosts', 'smtpsecure', 'smtpauthtype', 'smtpuser', 'smtppass', 'smtpmaxbulk', 'proxypassword',
             // Cookie
             'sessioncookie','sessioncookiepath', 'sessioncookiedomain',
             // mod_lti
@@ -158,7 +160,7 @@ function output_settings($component) {
     // Output exported module if verbose is on.
     if ($options['verbose']) {
         // Output the component being exported when in verbose mode.
-        cli_writeln('Exporting : ' . $component . ' --> Done.', STDERR);
+        cli_writeln('Exporting : ('.$index.'/'.$totalComponents.') ' . $component, STDERR);
     }
 
     return $commands;
