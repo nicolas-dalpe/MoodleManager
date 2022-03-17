@@ -95,6 +95,13 @@ function output_settings($component, $index, $totalComponents) {
 
         // Do not print the component if it only has a version setting and no other settings.
         if (count(get_object_vars($objCmdLineOutput)) == 1 && isset($objCmdLineOutput->version)) {
+
+            // Alert user that the module is skipped.
+            if ($options['verbose']) {
+                // Output the component being exported when in verbose mode.
+                cli_writeln('Skipping : ('.$index.'/'.$totalComponents.') ' . $component, STDERR);
+            }
+
             return "";
         }
 
