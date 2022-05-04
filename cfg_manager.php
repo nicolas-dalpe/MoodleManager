@@ -5,7 +5,7 @@ require('lib/clilib.php');
 
 $usage = "
 
-php cfg_manage.php --export --modules=core --verbose > settings.txt
+php cfg_manage.php --export --modules=core > settings.txt
 Exports modules as JSON objects.
 --modules can be:
  - core: Return only core module
@@ -13,7 +13,7 @@ Exports modules as JSON objects.
  - module: Module name, can be csv ie: quiz,page,h5p
  - all: Returns all modules
 
-php cfg_manage.php --import --file=settings.txt --verbose
+php cfg_manage.php --import --file=settings.txt
 Import the settings contained in file.
 
 ";
@@ -24,7 +24,6 @@ list($options, $unrecognized) = cli_get_params(
         'import'  => false,
         'file'    => false,
         'modules' => false,
-        'verbose' => false,
         'help'    => false
     ]
 );
@@ -56,22 +55,6 @@ class Env {
 
     /** @var string $php Path to PHP. */
     public $php = '/usr/local/bin/php';
-
-    /** @var string $verbose Set the verbose mode on or off. */
-    public $verbose;
-
-    /**
-     * Set the verbose mode on or off.
-     *
-     * @param bool $verbose Whether verbose mode should be turned on/off.
-     */
-    public function set_verbose($verbose) {
-        if ($verbose === true) {
-            $this->verbose = true;
-        } else {
-            $this->verbose = false;
-        }
-    }
 }
 
 /**
@@ -88,7 +71,6 @@ class Export extends Env {
     public function __construct(array $options) {
         $this->output = new Output();
         $this->set_modules($options['modules']);
-        $this->set_verbose($options['verbose']);
     }
 
     /**
@@ -126,13 +108,6 @@ class Export extends Env {
 
         foreach($this->modules as $module) {
 
-            // Output exported module if verbose is on.
-            if ($this->verbose) {
-                // Output the component being exported when in verbose mode.
-                $this->output->line('Exporting ('.$current_module.'/'.$total_modules.'): ' . $module . ' --> Done.');
-                $current_module++;
-            }
-
             // Get the cfg.php Moodle script to output the component settings in JSON format.
             // We export the settings in JSON so it is easier to manage the multi-line settings.
             exec($this->php.' admin/cli/cfg.php --component='.$module.' --json', $cmdLineOutput, $status);
@@ -143,12 +118,8 @@ class Export extends Env {
                 $objCmdLineOutput = json_decode($cmdLineOutput[0]);
                 if (count(get_object_vars($objCmdLineOutput)) == 1 && isset($objCmdLineOutput->version)) {
 
-                    // Output exported module if verbose is on.
-                    if ($this->verbose) {
-                        // Output the component being exported when in verbose mode.
-                        $this->output->line('Skipped: ' . $module);
-                        $current_module++;
-                    }
+                    // Output the component being skipped.
+                    $this->output->line('Skipped: ' . $module);
 
                     continue;
                 }
@@ -156,6 +127,11 @@ class Export extends Env {
                 // Wrap json in our own structure ("module:{settings:...}").
                 $settings[] = '"' . $module . '":' . $cmdLineOutput[0];
             }
+
+            // Output the component being exported.
+            $this->output->line($current_module.'/'.$total_modules.' - Exported: ' . $module . '.');
+
+            $current_module++;
 
             unset($cmdLineOutput);
         }
@@ -195,7 +171,6 @@ class Import extends Env {
     public function __construct(array $options) {
         $this->output = new Output();
         $this->set_file($options['file']);
-        $this->set_verbose($options['verbose']);
     }
 
     public function set_file(string $file) {
