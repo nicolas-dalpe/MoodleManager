@@ -46,6 +46,7 @@ if ($options['export']) {
 
 if ($options['import']) {
     $Import = new Import($options);
+    $Import->import();
 }
 
 /**
@@ -173,17 +174,48 @@ class Import extends Env {
         $this->set_file($options['file']);
     }
 
+    /**
+     * Set the file to import the settings from.
+     */
     public function set_file(string $file) {
-        if (!empty($file) && strlen($file) > 3) {
-            $this->file = $file;
+        global $usage;
+
+        if (empty($file)) {
+            $this->output->line('--file can\'t be empty.');
+            exit($usage);
         }
+
+        if (!is_file($file)) {
+            $this->output->line('--file must be a file.');
+            exit($usage);
+        }
+
+        if (!is_readable($file)) {
+            $this->output->line('--file must be a readable.');
+            exit($usage);
+        }
+
+        $this->file = $file;
     }
 
     public function import() {
         $json = file_get_contents($this->file);
         $settings = json_decode($json);
-        var_dump($settings);
-        exit();
+
+        // Get the total numer of module to import.
+        $total_modules = count((array)$settings);
+        $current_module = 1;
+
+        foreach($settings as $module => $setting) {
+            $this->output->line($current_module . '/' . $total_modules . ' Importing: ' . $module);
+            foreach($setting as $setting_name => $setting_value) {
+                exec($this->php.' admin/cli/cfg.php --name='.$setting_name.' --set='.$setting_value, $cmdLineOutput, $status);
+                if ($status === 0) {
+                    $this->output->line(' - Imported: ' . $setting_name);
+                }
+            }
+            $current_module++;
+        }
     }
 }
 
