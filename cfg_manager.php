@@ -7,9 +7,13 @@ $usage = "
 
 php cfg_manage.php --export --modules=core --verbose > settings.txt
 Exports modules as JSON objects.
-Module can be: core, contrib, module or all
+--modules can be:
+ - core: Return only core module
+ - contrib: Returns only the contributed module
+ - module: Module name, can be csv ie: quiz,page,h5p
+ - all: Returns all modules
 
-php cfg_manage.php --import --files=settings.txt --verbose
+php cfg_manage.php --import --file=settings.txt --verbose
 Import the settings contained in file.
 
 ";
@@ -41,13 +45,17 @@ if ($options['export']) {
     echo $Export->get_json();
 }
 
+if ($options['import']) {
+    $Import = new Import($options);
+}
+
 /**
  * Evironment variables.
  */
 class Env {
 
     /** @var string $php Path to PHP. */
-    public $php = '/usr/bin/php';
+    public $php = '/usr/local/bin/php';
 
     /** @var string $verbose Set the verbose mode on or off. */
     public $verbose;
@@ -89,7 +97,7 @@ class Export extends Env {
      * @param string $modules The modules name to export.
      */
     private function set_modules($modules) {
-        if (!empty($modules) && strlen($modules) > 3) {
+        if (!empty($modules) && strlen($modules) > 2) {
             $this->modules = explode(',', $modules);
         }
     }
@@ -102,12 +110,27 @@ class Export extends Env {
         // Contains all the JSON setting strings of module to export.
         $settings = array();
 
+        // Get all the modules if --modules == all.
+        if ($this->modules[0] == 'all') {
+            $this->modules = $this->get_all_modules('core');
+        }
+
+        // Get all the modules if --modules == all.
+        if ($this->modules[0] == 'contrib') {
+            $this->modules = $this->get_all_modules();
+        }
+
+        $total_modules = count($this->modules);
+
+        $current_module = 1;
+
         foreach($this->modules as $module) {
 
             // Output exported module if verbose is on.
             if ($this->verbose) {
                 // Output the component being exported when in verbose mode.
-                $this->output->line('Exporting : ' . $module . ' --> Done.');
+                $this->output->line('Exporting ('.$current_module.'/'.$total_modules.'): ' . $module . ' --> Done.');
+                $current_module++;
             }
 
             // Get the cfg.php Moodle script to output the component settings in JSON format.
@@ -119,6 +142,14 @@ class Export extends Env {
                 // Do not keep the component if it only has a version setting and no other settings.
                 $objCmdLineOutput = json_decode($cmdLineOutput[0]);
                 if (count(get_object_vars($objCmdLineOutput)) == 1 && isset($objCmdLineOutput->version)) {
+
+                    // Output exported module if verbose is on.
+                    if ($this->verbose) {
+                        // Output the component being exported when in verbose mode.
+                        $this->output->line('Skipped: ' . $module);
+                        $current_module++;
+                    }
+
                     continue;
                 }
 
@@ -131,13 +162,39 @@ class Export extends Env {
 
         return "{\n" . implode(",\n", $settings) . "\n}";
     }
+
+    /**
+     * Get the individual plugin name.
+     *
+     * @param str $extra Extra plugin to include such as core.
+     *
+     * @return array $components The plugins list.
+     */
+    private function get_all_modules($extra = false) {
+        global $CFG, $DB;
+
+        // Contains the list of components to return.
+        $components = array();
+
+        // Add special request to the list.
+        if ($extra !== false) {
+            $components[] = $extra;
+        }
+
+        $plugins = $DB->get_records_sql("SELECT * FROM {$CFG->prefix}config_plugins GROUP BY plugin");
+        foreach ($plugins as $plugin) {
+            $components[] = $plugin->plugin;
+        }
+
+        return $components;
+    }
 }
 
 class Import extends Env {
 
     public function __construct(array $options) {
         $this->output = new Output();
-        $this->set_file($options['modules']);
+        $this->set_file($options['file']);
         $this->set_verbose($options['verbose']);
     }
 
@@ -148,7 +205,10 @@ class Import extends Env {
     }
 
     public function import() {
-
+        $json = file_get_contents($this->file);
+        $settings = json_decode($json);
+        var_dump($settings);
+        exit();
     }
 }
 
