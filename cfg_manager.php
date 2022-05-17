@@ -1,11 +1,14 @@
 <?php
+
+// docker exec lamp-mariadb106 mysqldump --user=docker --password=docker moodle_econcordia_com_311_K1_POLLM3 mdl_config mdl_config_log mdl_config_plugins --opt --no-create-db --no-create-info --skip-triggers --skip-add-locks --disable-keys --skip-extended-insert > D:\www\moodle_econcordia_com_311\public\original.sql
+
 define('CLI_SCRIPT', true);
 require('config.php');
 require('lib/clilib.php');
 
 $usage = "
 
-php cfg_manage.php --export --modules=core > settings.txt
+php cfg_manager.php --export --modules=core > settings.txt
 Exports modules as JSON objects.
 --modules can be:
  - core: Return only core module
@@ -13,7 +16,7 @@ Exports modules as JSON objects.
  - module: Module name, can be csv ie: quiz,page,h5p
  - all: Returns all modules
 
-php cfg_manage.php --import --file=settings.txt
+php cfg_manager.php --import --file=settings.txt
 Import the settings contained in file.
 
 ";
@@ -56,6 +59,61 @@ class Env {
 
     /** @var string $php Path to PHP. */
     public $php = '/usr/local/bin/php';
+
+    /** @var array $settingToIgnore Settings to ignore during export/import. */
+    public $settingsToIgnore = array(
+        // Core
+        'siteidentifier', 'supportemail', 'siteadmins', 'themerev', 'jsrev', 'langrev', 'localcachedirpurged',
+        'scheduledtaskreset', 'allversionshash', 'fileslastcleanup', 'digestmailtimelast', 'scorm_updatetimelast',
+        'templaterev', 'noemailever', 'auth', 'enrol_plugins_enabled',
+        // Core - database
+        'dbtype', 'dblibrary', 'dbhost', 'dbname', 'dbuser', 'dbpass', 'prefix', 'wwwroot',
+        // Core - file permissions
+        'directorypermissions', 'dirroot', 'filepermissions', 'umaskpermissions',
+        // Core - path
+        'dataroot', 'libdir', 'tempdir', 'backuptempdir', 'cachedir', 'localcachedir', 'localrequestdir',
+        'langotherroot', 'langlocalroot', 'noreplyaddress', 'chat_serverhost', 'pathtogs', 'geoip2file', 'auth_instructions',
+        // Core - OS path
+        'pathtounoconv',
+        // Core - SMTP
+        'smtphosts', 'smtpsecure', 'smtpauthtype', 'smtpuser', 'smtppass', 'smtpmaxbulk',
+        // Cookie
+        'sessioncookie','sessioncookiepath', 'sessioncookiedomain',
+        // mod_lti
+        'kid', 'privatekey',
+        // filter_tex
+        'pathconvert', 'pathdvips', 'pathdvisvgm', 'pathlatex',
+        // Poodll user and secret
+        'cpapiuser', 'cpapisecret',
+        // auth_econcordia
+        'jwt_key', 'token_validation_url', 'login_validation_url', 'host',
+        // Moodle features
+        'enablestats', 'allowindexing', 'allowguestmymoodle', 'debug', 'debugdisplay', 'perfdebug',
+        'debugstringids', 'debugvalidators', 'debugpageinfo', 'loglifetime',
+        // Cron
+        'lastcroninterval', 'lastcronstart',
+        // H5P
+        'site_uuid', 'recentfetch', 'recentresponse',
+        // custom theme
+        'adfsurl',
+    );
+
+    /**
+     * Remove the keys to ignore from a module settings.
+     *
+     * @param object $settings The object of settings to filter.
+     *
+     * @return object $settings The object of settings filtered.
+     */
+    public function settings_to_ignore($settings) {
+        foreach($settings as $setting_name => $setting_value) {
+            if (in_array($setting_name, $this->settingsToIgnore)) {
+                unset($settings->{$setting_name});
+            }
+        }
+
+        return $settings;
+    }
 }
 
 /**
@@ -117,6 +175,8 @@ class Export extends Env {
 
                 // Do not keep the component if it only has a version setting and no other settings.
                 $objCmdLineOutput = json_decode($cmdLineOutput[0]);
+
+                // Do not export the module if it has only 1 setting and it is version.
                 if (count(get_object_vars($objCmdLineOutput)) == 1 && isset($objCmdLineOutput->version)) {
 
                     // Output the component being skipped.
@@ -125,8 +185,12 @@ class Export extends Env {
                     continue;
                 }
 
+                // Remove the settings to ignore.
+                $objCmdLineOutput = $this->settings_to_ignore($objCmdLineOutput);
+
                 // Wrap json in our own structure ("module:{settings:...}").
-                $settings[] = '"' . $module . '":' . $cmdLineOutput[0];
+                // $settings[] = '"' . $module . '":' . $cmdLineOutput[0];
+                $settings[] = '"' . $module . '":' . json_encode($objCmdLineOutput);
             }
 
             // Output the component being exported.
@@ -211,7 +275,7 @@ class Import extends Env {
             foreach($setting as $setting_name => $setting_value) {
                 exec($this->php.' admin/cli/cfg.php --name='.$setting_name.' --set='.$setting_value, $cmdLineOutput, $status);
                 if ($status === 0) {
-                    $this->output->line(' - Imported: ' . $setting_name);
+                    $this->output->line("    Set: " . $setting_name . ' to ' . $setting_value);
                 }
             }
             $current_module++;
