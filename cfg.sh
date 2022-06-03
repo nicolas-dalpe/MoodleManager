@@ -7,6 +7,9 @@
 # Look at the bottom of the file for plugin settings
 declare -A settings
 
+# Add instance of manual enrolment to new courses
+php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
+
 # Allow guest access to Dashboard
 # If enabled guests can access Dashboard, otherwise guests are
 # redirected to the site front page.
@@ -72,7 +75,7 @@ settings["allowindexing"]=2
 # This setting customises the name of the cookie used for Moodle sessions.
 # This is optional, and only useful to avoid cookies being confused when
 # there is more than one copy of Moodle running within the same web site.
-settings["sessioncookie"]='moodleeconcom'
+settings["sessioncookie"]='POLLM43'
 
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates for
@@ -105,18 +108,18 @@ done
 # Analytics models, such as 'Students at risk of dropping out' or 'Upcoming activities due',
 # can generate predictions, send insight notifications and offer further actions
 # such as messaging users.
-# php admin/cli/cfg.php --name=enableanalytics --set=0
+#php admin/cli/cfg.php --name=enableanalytics --set=0
 
 # Enable statistics
 # If you choose 'yes' here, Moodle's cronjob will process the logs and gather some statistics.
 # Depending on the amount of traffic on your site, this can take awhile. If you enable this,
 # you will be able to see some interesting graphs and statistics about each of your courses,
 # or on a sitewide basis.
-# php admin/cli/cfg.php --name=enablestats --set=0
+#php admin/cli/cfg.php --name=enablestats --set=0
 
 # Networking
 # MNet allows communication of this server with other servers or services.
-# php admin/cli/cfg.php --name=mnet_dispatcher_mode --set=off
+#php admin/cli/cfg.php --name=mnet_dispatcher_mode --set=off
 
 # Plugin Skel
 # php admin/cli/cfg.php --component=tool_pluginskel --name=copyright --set=""`date +"%Y"`" KnowledgeOne <nicolas.dalpe@knowledgeone.ca>"
@@ -125,12 +128,12 @@ done
 
 # KeyboardEvent
 # The default keyboard shortcut is the ` Backquote (above the TAB).
-# php admin/cli/cfg.php --component=local_commander --name=keys --set=32
+#php admin/cli/cfg.php --component=local_commander --name=keys --set=32
 # echo local/commander/ >> .git/info/exclude
 
 # Moodle Adminer
 # Start adminer with current database
-# php admin/cli/cfg.php --component=local_adminer --name=startwithdb --set=1
+#php admin/cli/cfg.php --component=local_adminer --name=startwithdb --set=1
 # echo local/adminer/ >> .git/info/exclude
 
 # Exclude dev plugins from git
