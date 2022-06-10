@@ -189,7 +189,6 @@ class Export extends Env {
                 $objCmdLineOutput = $this->settings_to_ignore($objCmdLineOutput);
 
                 // Wrap json in our own structure ("module:{settings:...}").
-                // $settings[] = '"' . $module . '":' . $cmdLineOutput[0];
                 $settings[] = '"' . $module . '":' . json_encode($objCmdLineOutput);
             }
 
@@ -263,8 +262,15 @@ class Import extends Env {
     }
 
     public function import() {
+        // Get the settings from the file.
         $json = file_get_contents($this->file);
-        $settings = json_decode($json);
+
+        // Transform the settings into a json object.
+        $settings = json_decode($json, true);
+
+
+        // Remove the settings to ignore.
+        $settings = $this->settings_to_ignore($settings);
 
         // Get the total numer of module to import.
         $total_modules = count((array)$settings);
@@ -273,6 +279,9 @@ class Import extends Env {
         foreach($settings as $module => $setting) {
             $this->output->line($current_module . '/' . $total_modules . ' Importing: ' . $module);
             foreach($setting as $setting_name => $setting_value) {
+
+                $setting_value = preg_replace("/\n/m", '\n', $setting_value);
+
                 exec($this->php.' admin/cli/cfg.php --name='.$setting_name.' --set='.$setting_value, $cmdLineOutput, $status);
                 if ($status === 0) {
                     $this->output->line("    Set: " . $setting_name . ' to ' . $setting_value);
@@ -294,6 +303,8 @@ class Output extends Env {
         // Use the STDERR channel so the output is written to
         // the console and not the > file.
         cli_writeln($text, STDERR);
+
+        // cli_write($got);
     }
 }
 
