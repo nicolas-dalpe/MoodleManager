@@ -10,6 +10,15 @@ declare -A settings
 # Add instance of manual enrolment to new courses
 php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
 
+# Disable the guest enrolment methode.
+php admin/cli/cfg.php --component=enrol_guest --name=defaultenrol --set=0
+
+# Allow course themes
+# If enabled, then courses will be allowed to set their own themes.
+# Course themes override all other theme choices
+# (site, user, category, cohort or URL-defined themes).
+settings["allowcoursethemes"]=1
+
 # Allow guest access to Dashboard
 # If enabled guests can access Dashboard, otherwise guests are
 # redirected to the site front page.
@@ -75,7 +84,7 @@ settings["allowindexing"]=2
 # This setting customises the name of the cookie used for Moodle sessions.
 # This is optional, and only useful to avoid cookies being confused when
 # there is more than one copy of Moodle running within the same web site.
-settings["sessioncookie"]='POLLM43'
+settings["sessioncookie"]='moodle_academy'
 
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates for
