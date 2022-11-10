@@ -165,9 +165,10 @@
 # Color the terminal prompt
 PS1='\[\e[01;36m\]\u\[\e[01;37m\]@\[\e[01;35m\]\h\[\e[01;37m\]:\[\e[01;32m\]\w\[\e[01;37m\]\$\[\033[0;37m\] '
 
-# Git status
+# Print useful information about a git repo such as remotes, checkedout branch, stash and modified files.
 alias gs='printf "\n\n" && git remote -v && printf "\n\n" && git branch -vv && printf "\n\n" && git status && printf "\n\n" && git stash list'
 
+# Better ls
 alias ll='ls -lash'
 
 # Only print if we are in terminal so we can download file via scp and connect with WinSCP.
@@ -217,8 +218,10 @@ alias cg='cd <span class="fr_moodle_folder text-success">{/var/www/html/dev_mood
 # Color the terminal prompt
 PS1='\[\e[01;36m\]\u\[\e[01;37m\]@\[\e[01;35m\]\h\[\e[01;37m\]:\[\e[01;32m\]\w\[\e[01;37m\]\$\[\033[0;37m\] '
 
-# Git status
+# Print useful information about a git repo such as remotes, checkedout branch, stash and modified files.
 alias gs='printf "\n\n" && git remote -v && printf "\n\n" && git branch -vv && printf "\n\n" && git status && printf "\n\n" && git stash list'
+
+# Better ls
 alias ll='ls -lash'
 
 # Only print if we are in terminal so we can download file via scp and connect with WinSCP.
