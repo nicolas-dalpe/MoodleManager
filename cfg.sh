@@ -13,6 +13,20 @@ php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
 # Disable the guest enrolment methode.
 php admin/cli/cfg.php --component=enrol_guest --name=defaultenrol --set=0
 
+# Automatically check for available updates
+# If enabled, your site will automatically check for available updates
+# for both Moodle code and all additional plugins. If there is a new update
+# available, a notification will be sent to site admins.
+settings["updateautocheck"]=0
+
+# Notify about new builds
+# If enabled, the available update for Moodle code is also reported when a
+# new build for the current version is available. Builds are continuous
+# improvements of a given Moodle version. They are generally released every week.
+# If disabled, the available update will be reported only when there is a
+# higher version of Moodle released. Checks for plugins are not affected by this setting.
+settings["updatenotifybuilds"]=0
+
 # Allow course themes
 # If enabled, then courses will be allowed to set their own themes.
 # Course themes override all other theme choices
