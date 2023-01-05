@@ -151,7 +151,7 @@ done
 
 # KeyboardEvent
 # The default keyboard shortcut is the ` Backquote (above the TAB).
-#php admin/cli/cfg.php --component=local_commander --name=keys --set=32
+#php admin/cli/cfg.php --component=local_commander --name=keys --set=12
 # echo local/commander/ >> .git/info/exclude
 
 # Moodle Adminer
