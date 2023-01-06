@@ -7,6 +7,10 @@
 # Look at the bottom of the file for plugin settings
 declare -A settings
 
+
+# https://stackoverflow.com/questions/918886/how-do-i-split-a-string-on-a-delimiter-in-bash
+
+
 # Add instance of manual enrolment to new courses
 php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
 
@@ -105,6 +109,21 @@ settings["sessioncookie"]='moodle_academy'
 # both Moodle code and all additional plugins. If there is a new update available,
 # a notification will be sent to site admins.
 settings["updateautocheck"]=0
+
+# No-reply address
+# Emails are sometimes sent out on behalf of a user (eg forum posts).
+# The email address you specify here will be used as the "From" address
+# in those cases when the recipients should not be able to reply directly
+# to the user (eg when a user chooses to keep their address private).
+# This setting will also be used as the envelope sender when sending email.
+settings["noreplyaddress"]='noreply@localhost.com'
+
+# Support email
+# If SMTP is configured on this site and a support page is not set,
+# this email address will receive messages submitted through the support form.
+# If sending fails, the email address will be displayed to logged-in users.
+settings["supportemail"]='supportemail@localhost.com'
+
 
 echo -e "\n"
 
