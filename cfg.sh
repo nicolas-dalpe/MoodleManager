@@ -182,3 +182,4 @@ done
 # echo local/codechecker/ >> .git/info/exclude
 # echo local/moodlecheck/ >> .git/info/exclude
 # echo report/benchmark/ >> .git/info/exclude
+# echo moosh/ >> .git/info/exclude
