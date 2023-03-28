@@ -17,6 +17,21 @@ php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
 # Disable the guest enrolment methode.
 php admin/cli/cfg.php --component=enrol_guest --name=defaultenrol --set=0
 
+# Keep logs for (number of days)
+# This specifies the length of time you want to keep logs about user activity.
+# Logs that are older than this age are automatically deleted. It is best
+# to keep logs as long as possible, in case you need them, but if you have
+# a very busy server and are experiencing performance problems, then you may
+# want to lower the log lifetime. Values lower than 30 are not recommended
+# because statistics may not work properly.
+php admin/cli/cfg.php --component=logstore_standard --name=loglifetime --set=60
+
+# Disable course recycle bin.
+settings["coursebinenable"]=0
+
+# Disable category recycle bin.
+settings["categorybinenable"]=0
+
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates
 # for both Moodle code and all additional plugins. If there is a new update
