@@ -75,30 +75,20 @@
             }
 
             // Init ClipboardJS.
-            // const clipboardBtns = ["#copy_sudo_output", "#copy_github_output", "#copy_inputrc_output"];
-            // for (btn in clipboardBtns) {
-            //     $(clipboardBtns[btn]).on("click", function() {
-            //         new ClipboardJS(clipboardBtns[btn]);
-            //     });
-            // }
-            $("#copy_sudo_output").on("click", function() {
-                new ClipboardJS('#copy_sudo_output');
-            });
-            $("#copy_github_output").on("click", function() {
-                new ClipboardJS('#copy_github_output');
-            });
-            $("#copy_inputrc_output").on("click", function() {
-                new ClipboardJS('#copy_inputrc_output');
-            });
-            $("#copy_git_output").on("click", function() {
-                new ClipboardJS('#copy_git_output');
-            });
-			$("#copy_github_cert").on("click", function() {
-                new ClipboardJS('#copy_github_cert');
-            });
+            const clipboardBtns = [
+				"#copy_sudo_output",
+				"#copy_github_output",
+				"#copy_inputrc_output",
+				"#copy_git_output",
+				"#copy_github_cert"
+			];
+            for (const btn in clipboardBtns) {
+                $(clipboardBtns[btn]).on("click", function() {
+                    new ClipboardJS(clipboardBtns[btn]);
+                });
+            }
 		});
 	</script>
-
 	<title>Server config generator</title>
 </head>
 
