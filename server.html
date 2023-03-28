@@ -93,6 +93,9 @@
             $("#copy_git_output").on("click", function() {
                 new ClipboardJS('#copy_git_output');
             });
+			$("#copy_github_cert").on("click", function() {
+                new ClipboardJS('#copy_github_cert');
+            });
 		});
 	</script>
 
@@ -142,9 +145,11 @@
                     <div class="mb-3">
 						<label for="github_branch" class="form-label">Github branch to checkout</label>
 						<select class="form-select" id="github_branch">
+							<option value="K1_LOCAL">K1_LOCAL</option>
 							<option value="K1_DEV" selected>K1_DEV</option>
 							<option value="K1_STAGING">K1_STAGING</option>
-						  </select>
+							<option value="K1_QA">K1_QA</option>
+						</select>
 					</div>
 					<div class="mb-3">
 						<button type="button" id="generate" class="btn btn-primary mb-3">Generate</button>
@@ -260,6 +265,25 @@ fi
 					</div>
 				</div>
 				<!-- /Github -->
+
+				<!-- SSL Certficate -->
+				<div class="row">
+					<div class="col">
+						<h2>Github - SSL Certificate</h2>
+                        <button type="button" id="copy_github_cert" data-clipboard-target="#github_cert" class="btn btn-primary mb-3">Copy</button>
+						<div id="github_cert">
+<pre>
+<span class="fr_sslcert text-success">{github_staging_envacademy_org}</span>@knowledgeone.ca
+/home/github/.ssh/<span class="fr_sslcert text-success">{github_staging_envacademy_org}</span>
+ssh-keygen -t ed25519 -C "<span class="fr_sslcert text-success">{github_staging_envacademy_org}</span>@knowledgeone.ca"
+eval "$(ssh-agent -s)"
+ssh-add /home/github/.ssh/<span class="fr_sslcert text-success">{github_staging_envacademy_org}</span>
+cat /home/github/.ssh/<span class="fr_sslcert text-success">{github_staging_envacademy_org}</span>.pub
+</pre>
+                        </div>
+					</div>
+				</div>
+				<!-- /SSL Certficate -->
 
 				<!-- Clone new Moodle -->
 				<div class="row">
