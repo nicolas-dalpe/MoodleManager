@@ -11,6 +11,10 @@ declare -A settings
 # https://stackoverflow.com/questions/918886/how-do-i-split-a-string-on-a-delimiter-in-bash
 
 
+############################################
+#### Settings that needs component name ####
+############################################
+
 # Add instance of manual enrolment to new courses
 php admin/cli/cfg.php --component=enrol_manual --name=defaultenrol --set=1
 
@@ -25,6 +29,16 @@ php admin/cli/cfg.php --component=enrol_guest --name=defaultenrol --set=0
 # want to lower the log lifetime. Values lower than 30 are not recommended
 # because statistics may not work properly.
 php admin/cli/cfg.php --component=logstore_standard --name=loglifetime --set=60
+
+# Include users in course backup
+# Sets the default for whether to include users in backups.
+php admin/cli/cfg.php --component=backup --name=backup_general_users --set=0
+
+# Keep course backup logs for
+# This specifies the length of time you want to keep backup logs information.
+# Logs that are older than this age are automatically deleted. It is recommended
+# to keep this value small, because backup logged information can be huge.
+php admin/cli/cfg.php --component=backup --name=loglifetime --set=7
 
 # Disable course recycle bin.
 settings["coursebinenable"]=0
