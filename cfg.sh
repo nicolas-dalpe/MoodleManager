@@ -117,7 +117,7 @@ settings["allowindexing"]=2
 # This setting customises the name of the cookie used for Moodle sessions.
 # This is optional, and only useful to avoid cookies being confused when
 # there is more than one copy of Moodle running within the same web site.
-settings["sessioncookie"]='moodle_academy'
+settings["sessioncookie"]='sandbox_moodle4x'
 
 # Automatically check for available updates
 # If enabled, your site will automatically check for available updates for
@@ -131,13 +131,13 @@ settings["updateautocheck"]=0
 # in those cases when the recipients should not be able to reply directly
 # to the user (eg when a user chooses to keep their address private).
 # This setting will also be used as the envelope sender when sending email.
-settings["noreplyaddress"]='noreply@localhost.com'
+settings["noreplyaddress"]='no-reply@knowledgeone.ca'
 
 # Support email
 # If SMTP is configured on this site and a support page is not set,
 # this email address will receive messages submitted through the support form.
 # If sending fails, the email address will be displayed to logged-in users.
-settings["supportemail"]='supportemail@localhost.com'
+settings["supportemail"]='no-reply@knowledgeone.ca'
 
 
 echo -e "\n"
@@ -165,36 +165,36 @@ done
 # Analytics models, such as 'Students at risk of dropping out' or 'Upcoming activities due',
 # can generate predictions, send insight notifications and offer further actions
 # such as messaging users.
-#php admin/cli/cfg.php --name=enableanalytics --set=0
+php admin/cli/cfg.php --name=enableanalytics --set=0
 
 # Enable statistics
 # If you choose 'yes' here, Moodle's cronjob will process the logs and gather some statistics.
 # Depending on the amount of traffic on your site, this can take awhile. If you enable this,
 # you will be able to see some interesting graphs and statistics about each of your courses,
 # or on a sitewide basis.
-#php admin/cli/cfg.php --name=enablestats --set=0
+php admin/cli/cfg.php --name=enablestats --set=0
 
 # Networking
 # MNet allows communication of this server with other servers or services.
 #php admin/cli/cfg.php --name=mnet_dispatcher_mode --set=off
 
 # Plugin Skel
-# php admin/cli/cfg.php --component=tool_pluginskel --name=copyright --set=""`date +"%Y"`" KnowledgeOne <nicolas.dalpe@knowledgeone.ca>"
-# php admin/cli/cfg.php --component=tool_pluginskel --name=version --set=""`date +"%Y%0m%0d"`"00"
-# echo admin/tool/pluginskel/ >> .git/info/exclude
+php admin/cli/cfg.php --component=tool_pluginskel --name=copyright --set=""`date +"%Y"`"eConcordia <tech@knowledgeone.ca>"
+php admin/cli/cfg.php --component=tool_pluginskel --name=version --set=""`date +"%Y%0m%0d"`"00"
+echo admin/tool/pluginskel/ >> .git/info/exclude
 
 # KeyboardEvent
 # The default keyboard shortcut is the ` Backquote (above the TAB).
-#php admin/cli/cfg.php --component=local_commander --name=keys --set=12
-# echo local/commander/ >> .git/info/exclude
+php admin/cli/cfg.php --component=local_commander --name=keys --set=12
+echo local/commander/ >> .git/info/exclude
 
 # Moodle Adminer
 # Start adminer with current database
-#php admin/cli/cfg.php --component=local_adminer --name=startwithdb --set=1
-# echo local/adminer/ >> .git/info/exclude
+php admin/cli/cfg.php --component=local_adminer --name=startwithdb --set=1
+echo local/adminer/ >> .git/info/exclude
 
 # Exclude dev plugins from git
-# echo local/codechecker/ >> .git/info/exclude
-# echo local/moodlecheck/ >> .git/info/exclude
-# echo report/benchmark/ >> .git/info/exclude
-# echo moosh/ >> .git/info/exclude
+echo local/codechecker/ >> .git/info/exclude
+echo local/moodlecheck/ >> .git/info/exclude
+echo report/benchmark/ >> .git/info/exclude
+echo moosh/ >> .git/info/exclude
